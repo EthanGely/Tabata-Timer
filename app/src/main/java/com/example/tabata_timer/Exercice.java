@@ -1,5 +1,6 @@
 package com.example.tabata_timer;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
@@ -9,14 +10,14 @@ public class Exercice {
     //Nom de l'exercice
     private String nomExercice;
 
-    //Données sur l'exercice (variables ci-dessus)
-    private Map<String, Integer> sportExercice;
+    private int sport, repos, repetitions, reposLong, seances;
+
 
     //Date de dernière modification/lancement
     private Date lastModified;
 
     //Données sur l'état (variables ci-dessus)
-    private Map<String, Integer> state;
+    private ArrayList<Integer> state = new ArrayList<>();
 
 
     ////////////////-- Constructeur --//////////////
@@ -43,20 +44,64 @@ public class Exercice {
 
     public void modifierExercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances) {
         this.nomExercice = nomExercice;
-        this.sportExercice.put("temps de sport", tempsDeSport);
-        this.sportExercice.put("temps de repos", tempsDeRepos);
-        this.sportExercice.put("nombre de repetitions", nombreDeRepetitions);
-        this.sportExercice.put("repos long", reposLong);
-        this.sportExercice.put("nombre de seances", nombreDeSeances);
+        this.sport = tempsDeSport;
+        this.repos = tempsDeRepos;
+        this.repetitions = nombreDeRepetitions;
+        this.reposLong = reposLong;
+        this.seances = nombreDeSeances;
         modificationDate();
     }
     /////////////////////////////////////////////////////////////////
 
 
-    //////////-- getteur pour les valeurs d'exercice --/////////////
-    public Map<String, Integer> getSportExercice() {
-        return this.sportExercice;
+    private String getHourMinTime(int secondes) {
+        int hours = (int) secondes / 3600;
+        int remaining = (int) secondes - hours * 3600;
+        int mins = remaining / 60;
+        remaining = remaining - mins * 60;
+        String temps = "";
+
+        if (hours > 0) {
+            temps = hours + "h ";
+        }
+        if (mins > 0) {
+            temps += mins + "mn ";
+        }
+
+        if (remaining > 0) {
+            temps += remaining + "s";
+        }
+        return temps;
     }
+
+    //////////-- getteur pour les valeurs d'exercice --/////////////
+
+    public String getSport() {
+
+        return getHourMinTime(this.sport);
+    }
+
+    public String getRepos() {
+        return getHourMinTime(this.repos);
+    }
+
+    public String getReps() {
+        return this.repetitions + "reps";
+    }
+
+    public String getReposLong() {
+        return getHourMinTime(this.reposLong);
+    }
+
+    public String getSeances() {
+        String str = "séance";
+        if (this.seances > 1) {
+            str += "s";
+        }
+        return this.seances + str;
+    }
+
+
     ////////////////////////////////////////////////////////////////
 
 
@@ -67,9 +112,9 @@ public class Exercice {
     /////////////////////////////////////////////////////////////////////
 
     /////-- setteur pour la sauvegarde --///////////////
-    public void saveProgression(int numeroRepetition, int numeroSeance) {
-        this.state.put("numero repetition", 0);
-        this.state.put("numero seance", 0);
+    public void saveProgression(Integer numeroRepetition, Integer numeroSeance) {
+        this.state.add(numeroRepetition);
+        this.state.add(numeroSeance);
         modificationDate();
     }
 }

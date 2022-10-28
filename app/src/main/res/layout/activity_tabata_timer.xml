@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Tabata_Timer">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp">
+
 
         <TextView
             android:id="@+id/welcome"
@@ -24,7 +18,7 @@
             android:layout_marginTop="20sp"
             android:text="Tabata Timer"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="40sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +45,7 @@
             android:layout_width="300sp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="25dp"
             android:onClick="onCreateWorkout"
             android:text="Créer un exercice"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,56 +54,52 @@
             android:backgroundTint="@color/blue"
             />
 
-
-        <ScrollView
-
+        <LinearLayout
+            android:id="@+id/overScroll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintTop_toBottomOf="@+id/createWorkout"
+            android:orientation="vertical"
+            android:weightSum="1"
+            android:background="@color/green">
+            <ScrollView
+                android:id="@+id/scroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:isScrollContainer="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/createWorkout">
 
                 <LinearLayout
+                    android:id="@+id/linearListeExos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:isScrollContainer="true"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:isScrollContainer="true">
 
-                    <TextView
-                        android:id="@+id/welcome2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20sp"
-                        android:background="@color/black"
-                        android:text="WORKING"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="40sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:visibility="visible"/>
 
                 </LinearLayout>
 
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </ScrollView>
+            </ScrollView>
+        </LinearLayout>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/end"
+            android:layout_width="400sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:text="quitter l'application"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/overScroll"
+            android:backgroundTint="@color/grey"
+            android:clickable="false"
+            />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
