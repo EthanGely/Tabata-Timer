@@ -7,16 +7,47 @@
     android:background="@drawable/border_radius"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/Exo_nom"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="Exo 1"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="25sp"
-        android:visibility="visible"/>
+        android:layout_weight="50"
+        android:background="@drawable/border_radius"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <ImageButton
+            android:id="@+id/modifierExo"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/settings"
+            android:layout_gravity="center"
+
+            />
+
+        <TextView
+            android:id="@+id/Exo_nom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Exo 1"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            android:visibility="visible"
+            android:layout_weight="1"
+            />
+
+        <ImageButton
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/settings"
+            android:layout_gravity="center"
+            android:onClick="onDeleteWorkout"
+
+            />
+
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/Exo_sport"

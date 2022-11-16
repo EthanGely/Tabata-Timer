@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateExercice"
+    android:orientation="vertical">
+
+    <ScrollView
+
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/welcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:text="Création d'un exercice"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/nomExo"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:backgroundTint="@color/grey"
+                android:hint="Nom de l'exercice"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="50dp"
+                android:weightSum="1"
+                >
+
+                <EditText
+                    android:id="@+id/tempsSport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/grey"
+                    android:hint="Durée de l'effort"
+                    android:inputType="numberDecimal"
+                    android:layout_weight="0.4"/>
+
+                <Spinner
+                    android:id="@+id/chxEffort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6">
+                </Spinner>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="50dp"
+                android:weightSum="1"
+                >
+
+                <EditText
+                    android:id="@+id/tempsRepos"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/grey"
+                    android:hint="Durée du repos"
+                    android:inputType="numberDecimal"
+                    android:layout_weight="0.4"
+                    />
+
+                <Spinner
+                    android:id="@+id/chxRepos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6">
+                </Spinner>
+
+            </LinearLayout>
+
+
+
+
+
+            <EditText
+                android:id="@+id/reps"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:backgroundTint="@color/grey"
+                android:hint="Nombre de répétitions"
+                android:inputType="numberDecimal"
+                />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="50dp"
+                android:weightSum="1"
+                >
+
+                <EditText
+                    android:id="@+id/reposLong"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/grey"
+                    android:hint="Durée du repos long"
+                    android:inputType="numberDecimal"
+                    android:layout_weight="0.4"
+                    />
+
+                <Spinner
+                    android:id="@+id/chxReposLong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6">
+                </Spinner>
+
+            </LinearLayout>
+
+
+
+            <EditText
+                android:id="@+id/seances"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:backgroundTint="@color/grey"
+                android:hint="Nombre de séances"
+                android:inputType="numberDecimal"
+                />
+
+            <Button
+                android:id="@+id/createWorkout"
+                android:layout_width="300sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                android:backgroundTint="@color/blue"
+                android:onClick="onCreateWorkout"
+                android:text="Créer l'exercice" />
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="300sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                android:backgroundTint="@color/blue"
+                android:onClick="onCancel"
+                android:text="Annuler" />
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+</LinearLayout>
