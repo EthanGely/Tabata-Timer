@@ -139,7 +139,7 @@ public class CreateExercice extends AppCompatActivity {
         char[] chars = nomExo.toCharArray();
         int nbr;
         if (nomExo.matches("[A-Z]*[a-z]*[0-9]*\\([0-9]+\\)")) {
-            nbr = chars[chars.length - 2] + 1;
+            nbr = ( Integer.parseInt(String.valueOf(chars[chars.length - 2])) ) + 1;
             nomExo = nomExo.split("\\(")[0];
         } else {
             nbr = 1;
