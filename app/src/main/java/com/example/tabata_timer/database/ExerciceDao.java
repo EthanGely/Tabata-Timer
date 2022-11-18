@@ -19,6 +19,9 @@ public interface ExerciceDao {
     @Query("SELECT * FROM exercice WHERE id = :id")
     Exercice findExerciceByID(int id);
 
+    @Query("SELECT * FROM exercice WHERE nomExercice = :nomExo AND id != :id")
+    Exercice findExerciceByName(String nomExo, int id);
+
     @Insert
     long insert(Exercice exercice);
 

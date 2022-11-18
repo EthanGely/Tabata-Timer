@@ -15,7 +15,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_margin="20dp">
             <TextView
                 android:id="@+id/welcome"
                 android:layout_width="match_parent"
@@ -24,26 +25,39 @@
                 android:text="Création d'un exercice"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="40sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="40sp"/>
 
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nom de l'exercice"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"/>
             <EditText
                 android:id="@+id/nomExo"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:backgroundTint="@color/grey"
-                android:hint="Nom de l'exercice"
+                android:hint="Entrez un nom d'exercice"
                 />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Durée de l'effort"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:weightSum="1"
                 >
 
@@ -53,24 +67,32 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:backgroundTint="@color/grey"
-                    android:hint="Durée de l'effort"
+                    android:hint="Entrez un durée"
                     android:inputType="numberDecimal"
-                    android:layout_weight="0.4"/>
+                    android:layout_weight="0.45"/>
 
                 <Spinner
                     android:id="@+id/chxEffort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6">
+                    android:layout_weight="0.55">
                 </Spinner>
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Durée du repos"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:weightSum="1"
                 >
 
@@ -80,16 +102,16 @@
                     android:layout_width="match_parent"
                     android:layout_gravity="center"
                     android:backgroundTint="@color/grey"
-                    android:hint="Durée du repos"
+                    android:hint="Entrez la durée du repos"
                     android:inputType="numberDecimal"
-                    android:layout_weight="0.4"
+                    android:layout_weight="0.45"
                     />
 
                 <Spinner
                     android:id="@+id/chxRepos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6">
+                    android:layout_weight="0.55">
                 </Spinner>
 
             </LinearLayout>
@@ -97,24 +119,39 @@
 
 
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre de répétitons"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"/>
 
             <EditText
                 android:id="@+id/reps"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:backgroundTint="@color/grey"
-                android:hint="Nombre de répétitions"
+                android:hint="Entrez un nombre de répétitions"
                 android:inputType="numberDecimal"
                 />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Durée du repos long"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"/>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:weightSum="1"
                 >
 
@@ -124,30 +161,37 @@
                     android:layout_width="match_parent"
                     android:layout_gravity="center"
                     android:backgroundTint="@color/grey"
-                    android:hint="Durée du repos long"
+                    android:hint="Entrez la durée du repos long"
                     android:inputType="numberDecimal"
-                    android:layout_weight="0.4"
+                    android:layout_weight="0.45"
                     />
 
                 <Spinner
                     android:id="@+id/chxReposLong"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6">
+                    android:layout_weight="0.55">
                 </Spinner>
 
             </LinearLayout>
 
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre de séances"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginTop="50dp"/>
 
             <EditText
                 android:id="@+id/seances"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:backgroundTint="@color/grey"
-                android:hint="Nombre de séances"
+                android:hint="Entrez un nombre de séances"
                 android:inputType="numberDecimal"
                 />
 
@@ -167,6 +211,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="25dp"
+                android:layout_marginBottom="40dp"
                 android:backgroundTint="@color/blue"
                 android:onClick="onCancel"
                 android:text="Annuler" />

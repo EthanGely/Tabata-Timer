@@ -6,15 +6,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.Exercice;
-import com.example.tabata_timer.database.ExerciceDao;
-
-import java.util.List;
 
 public class CreateExercice extends AppCompatActivity {
 
@@ -25,6 +23,10 @@ public class CreateExercice extends AppCompatActivity {
     public static final String EXERCICE_KEY = "exercice_key";
 
     private Exercice exerciceSave;
+
+    private boolean nameChecked = false;
+
+    private int id = -1;
 
 
     @Override
@@ -41,8 +43,8 @@ public class CreateExercice extends AppCompatActivity {
         final Spinner spinnerTempsRepos = (Spinner) findViewById(R.id.chxRepos);
         final Spinner spinnerTempsReposLong = (Spinner) findViewById(R.id.chxReposLong);
 
-        String[] typesTemps={"secondes","minutes", "heures"};
-        ArrayAdapter<String> dataAdapterR = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,typesTemps);
+        String[] typesTemps = {"secondes", "minutes", "heures"};
+        ArrayAdapter<String> dataAdapterR = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typesTemps);
         dataAdapterR.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinnerTempsEffort.setAdapter(dataAdapterR);
@@ -50,11 +52,12 @@ public class CreateExercice extends AppCompatActivity {
         spinnerTempsReposLong.setAdapter(dataAdapterR);
 
         if (isModifier) {
-            int id = (int) getIntent().getIntExtra(EXERCICE_KEY, 2);
+            id = (int) getIntent().getIntExtra(EXERCICE_KEY, -1);
+            if (id < 0) {
+                finish();
+            }
             //Récupère et affiche les données de l'exercice
             getExercice(id);
-            
-            
         }
     }
 
@@ -122,71 +125,142 @@ public class CreateExercice extends AppCompatActivity {
 
         EditText seances = findViewById(R.id.seances);
         seances.setText(String.valueOf(exerciceSave.getSeances()));
+
+        Button btnValider = findViewById(R.id.createWorkout);
+        btnValider.setText("Modifier l'exercice");
     }
 
     public void onCancel(View view) {
         finish();
     }
 
+    public void checkName(String nomExo) {
+
+        char[] chars = nomExo.toCharArray();
+        int nbr;
+        if (nomExo.matches("[A-Z]*[a-z]*[0-9]*\\([0-9]+\\)")) {
+            nbr = chars[chars.length - 2] + 1;
+            nomExo = nomExo.split("\\(")[0];
+        } else {
+            nbr = 1;
+        }
+        getExerciceByName(nomExo + "(" + nbr + ")", id);
+
+    }
+
+
+    private void getExerciceByName(String nomExo, int idExo) {
+        class GetExerciceByName extends AsyncTask<Void, Void, Exercice> {
+
+            @Override
+            protected Exercice doInBackground(Void... voids) {
+
+                // adding to database
+                Exercice exo = mDb.getAppDatabase()
+                        .exerciceDao()
+                        .findExerciceByName(nomExo, idExo);
+                return exo;
+            }
+
+            @Override
+            protected void onPostExecute(Exercice exercice) {
+                super.onPostExecute(exercice);
+                if (exercice == null) {
+                    nameChecked = true;
+                    createWorkout(nomExo);
+                } else {
+                    checkName(exercice.getNomExercice());
+                }
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        GetExerciceByName st = new GetExerciceByName();
+        st.execute();
+    }
+
     public void onCreateWorkout(View view) {
         //Tous les editText
         final EditText nomExo = (EditText) findViewById(R.id.nomExo);
         final String nomExerciceString = String.valueOf(nomExo.getText());
-        // Vérifier les informations fournies par l'utilisateur
         if (nomExerciceString.isEmpty()) {
             nomExo.setError("Nom requis");
             nomExo.requestFocus();
-            return;
+        }else{
+            createWorkout(nomExerciceString);
         }
+    }
+
+    private void createWorkout(String nomExerciceString) {
+
+        // Vérifier les informations fournies par l'utilisateur
+         if (!nameChecked) {
+            getExerciceByName(nomExerciceString, id);
+        } else {
+            final EditText tmpsSport = (EditText) findViewById(R.id.tempsSport);
+            int tempsSportInt = Integer.parseInt(String.valueOf(tmpsSport.getText()));
 
 
-        final EditText tmpsSport = (EditText) findViewById(R.id.tempsSport);
-        int tempsSportInt = Integer.parseInt(String.valueOf(tmpsSport.getText()));
+            final EditText tmpsRepos = (EditText) findViewById(R.id.tempsRepos);
+            int tempsReposInt = Integer.parseInt(String.valueOf(tmpsRepos.getText()));
 
 
-        final EditText tmpsRepos = (EditText) findViewById(R.id.tempsRepos);
-        int tempsReposInt = Integer.parseInt(String.valueOf(tmpsRepos.getText()));
+            final EditText nbReps = (EditText) findViewById(R.id.reps);
+            final int nbRepsInt = Integer.parseInt(String.valueOf(nbReps.getText()));
 
 
-        final EditText nbReps = (EditText) findViewById(R.id.reps);
-        final int nbRepsInt = Integer.parseInt(String.valueOf(nbReps.getText()));
+            final EditText reposLong = (EditText) findViewById(R.id.reposLong);
+            int reposLongInt = Integer.parseInt(String.valueOf(reposLong.getText()));
 
 
-        final EditText reposLong = (EditText) findViewById(R.id.reposLong);
-        int reposLongInt = Integer.parseInt(String.valueOf(reposLong.getText()));
+            final EditText seances = (EditText) findViewById(R.id.seances);
+            final int nbSeancesInt = Integer.parseInt(String.valueOf(seances.getText()));
+
+            //Tous les spinners
+            final Spinner spinnerTempsEffort = (Spinner) findViewById(R.id.chxEffort);
+            final Spinner spinnerTempsRepos = (Spinner) findViewById(R.id.chxRepos);
+            final Spinner spinnerTempsReposLong = (Spinner) findViewById(R.id.chxReposLong);
+
+            final String typeTempsSport = (String) spinnerTempsEffort.getSelectedItem();
+            final String typeTempsRepos = (String) spinnerTempsRepos.getSelectedItem();
+            final String typeTempsReposLong = (String) spinnerTempsReposLong.getSelectedItem();
+
+            tempsSportInt = getTempsEnSecondes(tempsSportInt, typeTempsSport);
+            tempsReposInt = getTempsEnSecondes(tempsReposInt, typeTempsRepos);
+            reposLongInt = getTempsEnSecondes(reposLongInt, typeTempsReposLong);
 
 
-        final EditText seances = (EditText) findViewById(R.id.seances);
-        final int nbSeancesInt = Integer.parseInt(String.valueOf(seances.getText()));
-
-        //Tous les spinners
-        final Spinner spinnerTempsEffort = (Spinner) findViewById(R.id.chxEffort);
-        final Spinner spinnerTempsRepos = (Spinner) findViewById(R.id.chxRepos);
-        final Spinner spinnerTempsReposLong = (Spinner) findViewById(R.id.chxReposLong);
-
-        final String typeTempsSport = (String) spinnerTempsEffort.getSelectedItem();
-        final String typeTempsRepos = (String) spinnerTempsRepos.getSelectedItem();
-        final String typeTempsReposLong = (String) spinnerTempsReposLong.getSelectedItem();
-
-        tempsSportInt = getTempsEnSecondes(tempsSportInt, typeTempsSport);
-        tempsReposInt = getTempsEnSecondes(tempsReposInt, typeTempsRepos);
-        reposLongInt = getTempsEnSecondes(reposLongInt, typeTempsReposLong);
+            if (id > 0) {
+                exerciceSave.modifierExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt);
+                modifierExercice(exerciceSave);
+            } else {
+                saveExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt);
+            }
+        }
+    }
 
 
-        /**
-         * Création d'une classe asynchrone pour sauvegarder la tache donnée par l'utilisateur
-         */
-        int finalTempsSportInt = tempsSportInt;
-        int finalTempsReposInt = tempsReposInt;
-        int finalReposLongInt = reposLongInt;
+    private int getTempsEnSecondes(int temps, String typeTemps) {
+        switch (typeTemps) {
+            case "minutes":
+                temps = temps * 60;
+                break;
+            case "heures":
+                temps = (temps * 60) * 60;
+                break;
+        }
+        return temps;
+    }
 
+    private void saveExercice(String nomExo, int tempsSport, int tempsRepos, int nbReps, int tempsReposLong, int nbSeances) {
         class SaveExercice extends AsyncTask<Void, Void, Exercice> {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
 
                 // creating a task
-                Exercice exo = new Exercice(nomExerciceString, finalTempsSportInt, finalTempsReposInt, nbRepsInt, finalReposLongInt, nbSeancesInt);
+                Exercice exo = new Exercice(nomExo, tempsSport, tempsRepos, nbReps, tempsReposLong, nbSeances);
 
                 // adding to database
                 long id = mDb.getAppDatabase()
@@ -205,7 +279,7 @@ public class CreateExercice extends AppCompatActivity {
             protected void onPostExecute(Exercice exercice) {
                 super.onPostExecute(exercice);
 
-                // Quand la tache est créée, on arrête l'activité AddTaskActivity (on l'enleve de la pile d'activités)
+                // Quand l'exercice est créé, on arrête l'activité
                 setResult(RESULT_OK);
                 finish();
                 Toast.makeText(getApplicationContext(), "Exercice créé", Toast.LENGTH_LONG).show();
@@ -218,17 +292,34 @@ public class CreateExercice extends AppCompatActivity {
         st.execute();
     }
 
+    private void modifierExercice(Exercice exo) {
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        class ModifierExercices extends AsyncTask<Void, Void, Exercice> {
 
-    private int getTempsEnSecondes(int temps, String typeTemps) {
-        switch (typeTemps) {
-            case "minutes":
-                temps = temps * 60;
-                break;
-            case "heures" :
-                temps = (temps * 60) * 60;
-                break;
+            @Override
+            protected Exercice doInBackground(Void... voids) {
+                mDb.getAppDatabase()
+                        .exerciceDao()
+                        .update(exo);
+                return exo;
+            }
+
+            @Override
+            protected void onPostExecute(Exercice exercice) {
+                super.onPostExecute(exercice);
+                // Quand l'exercice est modifié, on arrête l'activité
+                setResult(RESULT_OK);
+                finish();
+                Toast.makeText(getApplicationContext(), "Exercice modifié", Toast.LENGTH_LONG).show();
+            }
         }
-        return temps;
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        ModifierExercices gt = new ModifierExercices();
+        gt.execute();
     }
-    
+
 }
