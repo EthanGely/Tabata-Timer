@@ -2,8 +2,11 @@ package com.example.tabata_timer;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Update;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -18,6 +21,8 @@ import com.example.tabata_timer.utility.Compteur;
 import com.example.tabata_timer.utility.OnFinishListenner;
 import com.example.tabata_timer.utility.OnUpdateListener;
 
+import org.w3c.dom.Text;
+
 public class AllezSportif extends AppCompatActivity implements OnUpdateListener, OnFinishListenner {
 
     private DatabaseClient mDb;
@@ -30,6 +35,8 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     private Exercice exo;
     private boolean isFirstExo = true;
     private boolean isPrepared = false;
+
+    private String[][][] listeActivites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +53,21 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         // Récupération du DatabaseClient
         mDb = DatabaseClient.getInstance(getApplicationContext());
 
-        int id = (int) getIntent().getIntExtra(EXERCICE_KEY, -1);
+        //Récupération de l'id de l'exercice lancé
+        int id = getIntent().getIntExtra(EXERCICE_KEY, -1);
+        //Si l'id n'est pas trouvé (=-1) on quitte l'activité.
         if (id == -1) {
             finish();
         }
-
+        //Sinon, on récupère l'objet Exercice associé
         getExercice(id);
 
     }
 
+    /**
+     * Récupère l'objet Exercice grâce à un ID.
+     * @param id
+     */
     private void getExercice(int id) {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
@@ -71,7 +84,9 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
             @Override
             protected void onPostExecute(Exercice exercice) {
                 super.onPostExecute(exercice);
+                //Récupération de l'exercice
                 exo = exercice;
+                //Affichage des info de cet exo
                 afficherInfosExercice();
             }
         }
@@ -79,46 +94,67 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         gt.execute();
     }
 
+    /**
+     * Affiche les infos présentes dans l'attribut 'exo'
+     */
     private void afficherInfosExercice() {
+        //Nom de l'exercice
         TextView nomExo = findViewById(R.id.nomExo);
         nomExo.setText(String.valueOf(exo.getNomExercice()));
 
+        //Type d'activité en cours (effort, repos, repos long)
         TextView typeAction = findViewById(R.id.typeAction);
         typeAction.setText(String.valueOf(exo.getTypeAction()));
 
+        //Mise à jour de la liste des prochaines activitées
         updateListeActivites();
 
         //TIMER
         timer = findViewById(R.id.timer);
-
+        //Récupération du temps de l'activité en cours
         compteur.setTimer(exo.getMiliSec(exo.getTempsEnCours()));
 
         // Mise à jour graphique
-
         miseAJour();
+        //Si l'activité actuelle n'est pas la première, le chrono se relance automatiquement
+        //Sinon, on attends le clic user.
         if (!isFirstExo) {
             compteur.start();
         }
     }
 
+    /**
+     * Récupère les activités qui suivent l'activité actuelle
+     */
     private void updateListeActivites() {
 
+        //Récupération de l'exercice en cours (le dernier effectué)
         TextView typeExo = findViewById(R.id.typeAction);
         String lastTypeExo = (String) typeExo.getText();
+
+        //Si le dernier exercice est une préparation, on ne modifie rien (un Exercice n'a pas conaissance de la préparation)
         if (!lastTypeExo.contains("Préparez-vous !")) {
 
-            LinearLayout linearLayout = findViewById(R.id.linearListeActions);
-            linearLayout.removeAllViews();
+            //puis on récupère les numéros actuels de rep/séance,
             int numRepetition = exo.getNumeroRepetition();
             int numSeance = exo.getNumeroSeance();
 
+            //le nombre total de reps/séances
             int nbSeances = exo.getSeances();
             int nbReps = exo.getRepetitions();
 
-            String tempsSport = exo.getSport() + " " + exo.getTypeOfTime(exo.getSport());
-            String tempsRepos = exo.getRepos() + " " + exo.getTypeOfTime(exo.getRepos());
-            String tempsReposLong = exo.getReposLong() + " " + exo.getTypeOfTime(exo.getReposLong());
+            //sans oublier les durées de chaque activité
+            /*String tempsSport = exo.getHourMinTime(exo.getSport());
+            String tempsRepos = exo.getHourMinTime(exo.getRepos());
+            String tempsReposLong = exo.getHourMinTime(exo.getReposLong());
 
+             */
+
+
+            addExerciceToList();
+
+            //Tant qu'il reste des séances et des exercices à faire
+            /*
             while (numSeance <= nbSeances && numRepetition <= nbReps) {
                 if (lastTypeExo.contains("Effort")) {
                     if (numRepetition == nbReps) {
@@ -134,7 +170,6 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                     } else {
                         lastTypeExo = "Repos : " + tempsRepos;
                         addExerciceToList(lastTypeExo, linearLayout, numSeance, numRepetition);
-                        //numRepetition++;
                     }
                 } else if (lastTypeExo.contains("Repos") && !lastTypeExo.contains("long")) {
                     numRepetition++;
@@ -146,10 +181,13 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                     addExerciceToList(lastTypeExo, linearLayout, numSeance, numRepetition);
                 }
             }
+            
+             */
+
         }
     }
 
-    public void addExerciceToList(String text, LinearLayout linearLayout, int numSeance, int numRepetition) {
+    /*public void addExerciceToList(String text, LinearLayout linearLayout, int numSeance, int numRepetition) {
         if (text.contains("Effort")) {
             TextView textView2 = new TextView(this);
             textView2.setText("seance=" + numSeance + " repetiton=" + numRepetition);
@@ -162,10 +200,51 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
         linearLayout.addView(textView);
     }
+    
+     */
+
+    public void addExerciceToList() {
+        LinearLayout linearLayout = findViewById(R.id.linearListeActions);
+        linearLayout.removeAllViews();
+
+        TextView typeActivite = findViewById(R.id.typeAction);
+        listeActivites = exo.getFollowingActivities(String.valueOf(typeActivite.getText()));
+
+        int iValue = exo.getNumeroSeance() - 1;
+
+        for (int i = iValue; i < listeActivites.length; i++) {
+            int jValue = exo.getNumeroRepetition() - 1;
+            if (i != iValue) {
+                jValue = 0;
+            }
+            for (int j = jValue; j < listeActivites[i].length; j++) {
+                TextView textView;
+                if (listeActivites[i][j][0] != null || listeActivites[i][j][1] != null) {
+                    textView = new TextView(this);
+                    textView.setText("seance=" + (i + 1) + " repetiton=" + (j + 1));
+                    linearLayout.addView(textView);
+
+                    for (int k = 0; k < listeActivites[i][j].length; k++) {
+                        if (listeActivites[i][j][k] != null) {
+                            textView = new TextView(this);
+                            textView.setText(listeActivites[i][j][k]);
+                            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
+                            linearLayout.addView(textView);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public void onPauseResumeTimer(View view) {
         if (!compteur.getIsStarted()) {
             onStartTimer();
+            if (exo.getIsSport()) {
+                MediaPlayer song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
+                song.start();
+            }
         } else {
             onPauseTimer();
         }
@@ -215,7 +294,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         }
 
         if (exo.tempsFini()) {
-            finish();
+            endExercice();
         } else {
             isPrepared = false;
             afficherInfosExercice();
@@ -239,6 +318,53 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 // A null listener allows the button to dismiss the dialog and take no further action.
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    private void endExercice() {
+        class UpdateExo extends AsyncTask<Void, Void, Exercice> {
+
+            @Override
+            protected Exercice doInBackground(Void... voids) {
+                mDb.getAppDatabase()
+                        .exerciceDao()
+                        .update(exo);
+                return exo;
+            }
+
+            @Override
+            protected void onPostExecute(Exercice exercice) {
+                super.onPostExecute(exercice);
+                alertFinExercice();
+            }
+        }
+        UpdateExo gt = new UpdateExo();
+        gt.execute();
+    }
+
+    private void alertFinExercice() {
+        new AlertDialog.Builder(AllezSportif.this)
+                .setTitle("Exercice fini !")
+                .setMessage("Bravo, vous avez fini cet exercice !\nVous avez obtenu une étoile, c'est la " + exo.getNbEtoilesF() + " sur cet exerice !")
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton("Retour à la liste des exercices", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton("Refaire cet exercice", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(AllezSportif.this, AllezSportif.class);
+                        intent.putExtra(CreateExercice.EXERCICE_KEY, exo.getId());
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .setIcon(android.R.drawable.btn_star_big_on)
                 .show();
     }
 
