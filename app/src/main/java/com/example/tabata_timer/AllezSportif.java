@@ -56,6 +56,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         //Si l'id n'est pas trouvé (=-1) on quitte l'activité.
         if (id == -1) {
             finish();
+            return;
         }
         //Sinon, on récupère l'objet Exercice associé
         getExercice(id);
@@ -356,8 +357,9 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 // A null listener allows the button to dismiss the dialog and take no further action.
                 .setNegativeButton("Refaire cet exercice", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        long id = exo.getId();
                         Intent intent = new Intent(AllezSportif.this, AllezSportif.class);
-                        intent.putExtra(AllezSportif.EXERCICE_KEY, exo.getId());
+                        intent.putExtra(AllezSportif.EXERCICE_KEY, id);
                         startActivity(intent);
                         finish();
                     }
