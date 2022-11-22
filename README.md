@@ -9,7 +9,6 @@ Le meilleur Tabata timer hors du marché. Vous trouverez forcément mieux sur Pl
 - [ ] Ajouter un racourcit pour lancer le dernier exercice créé, modifié, exécuté.
 - [ ] Récupérer l'état d'un exercice, avec la possibilité de reprendre ou de recommencer l'exercice
 - [ ] Possibilité d'enlever les effets sonores.
-- [ ] Afficher un message à la fin de l'exercice.
 - [ ] Changer la couleur du chrono en fonction du temps restant.
 
 ### DONE
@@ -17,9 +16,11 @@ Le meilleur Tabata timer hors du marché. Vous trouverez forcément mieux sur Pl
 - [X] Liste des actions suivantes pendant un exercice.
 - [X] Modification, supression d'exercices.
 - [X] Gestion des doublons (uniquement sur le nom de l'exercice).
+- [X] Système d'étoiles (Nombre de réussite de l'exercice).
+- [X] Afficher un message à la fin de l'exercice.
 
 ### NEEDS CHECK
-- [ ] Si les temps sont donnés en minutes/heures vérifier que le chrono soit bien réglé.
+- [X] Si les temps sont donnés en minutes/heures vérifier que le chrono soit bien réglé.
 
 ## Description technique
 - L'application permet de créer des exercices, en spécifiant leur nom, différents temps, nombre de séances, de répétitions, puis de les lancer avec un chrono qui enchaîne automatiquement les tâches à faire.

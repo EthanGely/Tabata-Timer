@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CreateExercice"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/grey">
 
     <ScrollView
 
@@ -43,6 +44,7 @@
                 android:layout_marginTop="10dp"
                 android:backgroundTint="@color/grey"
                 android:hint="Entrez un nom d'exercice"
+                android:maxLines="1"
                 />
 
             <TextView

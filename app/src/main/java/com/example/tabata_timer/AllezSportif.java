@@ -36,8 +36,6 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     private boolean isFirstExo = true;
     private boolean isPrepared = false;
 
-    private String[][][] listeActivites;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -208,7 +206,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         linearLayout.removeAllViews();
 
         TextView typeActivite = findViewById(R.id.typeAction);
-        listeActivites = exo.getFollowingActivities(String.valueOf(typeActivite.getText()));
+        String[][][] listeActivites = exo.getFollowingActivities(String.valueOf(typeActivite.getText()));
 
         int iValue = exo.getNumeroSeance() - 1;
 
@@ -359,7 +357,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 .setNegativeButton("Refaire cet exercice", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(AllezSportif.this, AllezSportif.class);
-                        intent.putExtra(CreateExercice.EXERCICE_KEY, exo.getId());
+                        intent.putExtra(AllezSportif.EXERCICE_KEY, exo.getId());
                         startActivity(intent);
                         finish();
                     }
