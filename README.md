@@ -18,6 +18,7 @@ Le meilleur Tabata timer hors du marché. Vous trouverez forcément mieux sur Pl
 - [X] Gestion des doublons (uniquement sur le nom de l'exercice).
 - [X] Système d'étoiles (Nombre de réussite de l'exercice).
 - [X] Afficher un message à la fin de l'exercice.
+- [X] Possibilité de refaire un exercice après l'avoir fini, sans repasser par l'accueil.
 
 ### NEEDS CHECK
 - [X] Si les temps sont donnés en minutes/heures vérifier que le chrono soit bien réglé.

@@ -3,11 +3,12 @@ package com.example.tabata_timer;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Database;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,11 @@ import android.widget.TextView;
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.Exercice;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Tabata_Timer extends AppCompatActivity {
@@ -27,7 +32,9 @@ public class Tabata_Timer extends AppCompatActivity {
     private ArrayList<Exercice> listeExercices = new ArrayList<>();
 
     private int id;
-
+    private final int requestCreate = 0;
+    private final int requestUpdate = 1;
+    private final int requestStart = 2;
     // DATA
     private DatabaseClient mDb;
 
@@ -48,8 +55,6 @@ public class Tabata_Timer extends AppCompatActivity {
         LinearLayout fils = null;
 
         for (int i = 0; i < listeExercices.size(); i++) {
-
-
             if (i % 2 == 0) {
                 //Création d'un nouveau linearLayout
                 id = View.generateViewId();
@@ -62,22 +67,8 @@ public class Tabata_Timer extends AppCompatActivity {
                 fils = findViewById(id);
             }
 
-
             LinearLayout linearTmp = createNewExercice(listeExercices.get(i), linear, i);
-
-            //Structure :
-            // <(Constraint Layout)>
-            //      <Linear Layout (linearListeExos) - vertical>
-            //          <Linear Layout - Horizontal>            //A créer une fois sur 2
-            //              - Template Exercice                 //Ajouter au nouveau layout
-            //              - Template Exercice                 //Ajouter au nouveau layout
-            //          </Linear Layout>
-            //      </Linear Layout>
-            // </(Constraint Layout)>
-
-
             linear.addView(linearTmp);
-
         }
     }
 
@@ -95,6 +86,7 @@ public class Tabata_Timer extends AppCompatActivity {
         TextView repsExo = linearTmp.findViewById(R.id.Exo_reps);
         TextView reposLongExo = linearTmp.findViewById(R.id.Exo_repos_long);
         TextView seancesExo = linearTmp.findViewById(R.id.Exo_seances);
+        TextView date = linearTmp.findViewById(R.id.dateExo);
 
         ImageButton modifier = linearTmp.findViewById(R.id.modifierExo);
         ImageButton supprimer = linearTmp.findViewById(R.id.supprimerExo);
@@ -109,6 +101,7 @@ public class Tabata_Timer extends AppCompatActivity {
         repsExo.setText(exercice.getRepetitionsF());
         reposLongExo.setText(exercice.getReposLongF());
         seancesExo.setText(exercice.getSeancesF());
+        date.setText((String) exercice.getLastModified().toString());
 
         // Ajouter un événement au bouton de modification
 
@@ -120,7 +113,7 @@ public class Tabata_Timer extends AppCompatActivity {
                 startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
 
                 // Lancement de la demande de changement d'activité
-                startActivity(startExoIntent);
+                startActivityForResult(startExoIntent, requestStart);
             }
         });
 
@@ -137,7 +130,7 @@ public class Tabata_Timer extends AppCompatActivity {
                 createExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
 
                 // Lancement de la demande de changement d'activité
-                startActivityForResult(createExoIntent, 0);
+                startActivityForResult(createExoIntent, requestUpdate);
             }
         });
 
@@ -182,16 +175,22 @@ public class Tabata_Timer extends AppCompatActivity {
         Intent createExoIntent = new Intent(Tabata_Timer.this, CreateExercice.class);
         createExoIntent.putExtra(CreateExercice.MODIFIER_KEY, false);
         // Lancement de la demande de changement d'activité
-        startActivityForResult(createExoIntent, 0);
+        startActivityForResult(createExoIntent, requestCreate);
     }
+
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-
+        if ((requestCode == requestCreate || requestCode == requestUpdate || requestCode == requestStart) && resultCode == RESULT_OK) {
             // Mise à jour des taches
             getExercices();
+        }else if (requestCode == requestStart && resultCode == RESULT_FIRST_USER) {
+            Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
+            startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
+
+            // Lancement de la demande de changement d'activité
+            startActivityForResult(startExoIntent, requestStart);
         }
     }
 
@@ -215,6 +214,7 @@ public class Tabata_Timer extends AppCompatActivity {
                 super.onPostExecute(exercices);
                 listeExercices.clear();
                 listeExercices.addAll(exercices);
+                sortListeExercice();
                 addExercices();
             }
         }
@@ -251,5 +251,77 @@ public class Tabata_Timer extends AppCompatActivity {
         // Création d'un objet de type GetTasks et execution de la demande asynchrone
         SupprimerExercices gt = new SupprimerExercices();
         gt.execute();
+    }
+
+
+
+    // Array A[] has the items to sort; array B[] is a work array.
+    private ArrayList<Exercice> TopDownMergeSort(ArrayList<Exercice> A)
+    {
+        int n = A.size();
+        ArrayList<Exercice> B = new ArrayList<>(A);
+        CopyArray(A, 0, n, B);
+        TopDownSplitMerge(B, 0, n, A);   // sort data from B[] into A[]
+        return B;
+    }
+
+    // Split A[] into 2 runs, sort both runs into B[], merge both runs from B[] to A[]
+// iBegin is inclusive; iEnd is exclusive (A[iEnd] is not in the set).
+    private void TopDownSplitMerge(ArrayList<Exercice> B, int iBegin, int iEnd, ArrayList<Exercice> A)
+    {
+        if (iEnd - iBegin <= 1)                     // if run size == 1
+            return;                                 //   consider it sorted
+        // split the run longer than 1 item into halves
+        int iMiddle = (iEnd + iBegin) / 2;              // iMiddle = mid point
+        // recursively sort both runs from array A[] into B[]
+        TopDownSplitMerge(A, iBegin,  iMiddle, B);  // sort the left  run
+        TopDownSplitMerge(A, iMiddle,    iEnd, B);  // sort the right run
+        // merge the resulting runs from array B[] into A[]
+        TopDownMerge(B, iBegin, iMiddle, iEnd, A);
+    }
+
+    //  Left source half is A[ iBegin:iMiddle-1].
+// Right source half is A[iMiddle:iEnd-1   ].
+// Result is            B[ iBegin:iEnd-1   ].
+    private void TopDownMerge(ArrayList<Exercice> A, int iBegin, int iMiddle, int iEnd, ArrayList<Exercice> B)
+    {
+        int i = iBegin;
+        int j = iMiddle;
+
+        // While there are elements in the left or right runs...
+        for (int k = iBegin; k < iEnd; k++) {
+            // If left run head exists and is <= existing right run head.
+            Exercice temp;
+            if (i < iMiddle && (j >= iEnd || A.get(i).getLastModified().compareTo(A.get(j).getLastModified()) > 0)) {
+
+                i = i + 1;
+            } else {
+                temp = A.get(i);
+                B.set(i, A.get(j));
+                B.set(j, temp);
+                j = j + 1;
+            }
+        }
+    }
+
+    void CopyArray(ArrayList<Exercice> A, int iBegin, int iEnd,  ArrayList<Exercice> B)
+    {
+        for (int k = iBegin; k < iEnd; k++)
+            B.set(k, A.get(k));
+    }
+
+
+
+
+
+
+    private void sortListeExercice() {
+        listeExercices = new ArrayList<>(TopDownMergeSort(listeExercices));
+        int test = listeExercices.get(0).getLastModified().compareTo(listeExercices.get(1).getLastModified());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //listeExercices.sort(Comparator.comparing(Exercice::getLastModified));
+        }else{
+            //listeExercices = new ArrayList<>(TopDownMergeSort(listeExercices));
+        }
     }
 }

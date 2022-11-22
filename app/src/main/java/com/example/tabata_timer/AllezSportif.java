@@ -83,6 +83,10 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
             @Override
             protected void onPostExecute(Exercice exercice) {
                 super.onPostExecute(exercice);
+                if (exercice == null) {
+                    finish();
+                    return;
+                }
                 //Récupération de l'exercice
                 exo = exercice;
                 //Affichage des info de cet exo
@@ -348,8 +352,9 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
                 // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
-                .setPositiveButton("Retour à la liste des exercices", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Retour à la liste", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        setResult(RESULT_OK);
                         finish();
                     }
                 })
@@ -357,10 +362,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 // A null listener allows the button to dismiss the dialog and take no further action.
                 .setNegativeButton("Refaire cet exercice", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        long id = exo.getId();
-                        Intent intent = new Intent(AllezSportif.this, AllezSportif.class);
-                        intent.putExtra(AllezSportif.EXERCICE_KEY, id);
-                        startActivity(intent);
+                        setResult(RESULT_FIRST_USER);
                         finish();
                     }
                 })
