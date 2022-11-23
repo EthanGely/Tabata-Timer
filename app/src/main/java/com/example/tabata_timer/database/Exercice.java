@@ -269,6 +269,7 @@ public class Exercice {
             if (numeroRepetition == repetitions) {
                 if (numeroSeance == seances) {
                     setNbEtoiles(nbEtoiles + 1);
+                    modificationDate();
                     resetExo();
                     return true;
                 }
@@ -391,7 +392,7 @@ public class Exercice {
     /**
      * Met à jour la date de dernière modification avec l'heure actuelle
      */
-    private void modificationDate() {
+    public void modificationDate() {
         this.lastModified = new Date(System.currentTimeMillis());
     }
 

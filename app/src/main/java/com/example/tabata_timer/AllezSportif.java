@@ -297,7 +297,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         }
 
         if (exo.tempsFini()) {
-            endExercice();
+            endExercice(true);
         } else {
             isPrepared = false;
             afficherInfosExercice();
@@ -314,7 +314,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(getApplicationContext(), "LOOSER", Toast.LENGTH_SHORT).show();
-                        finish();
+                        endExercice(false);
                     }
                 })
 
@@ -324,7 +324,8 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 .show();
     }
 
-    private void endExercice() {
+    private void endExercice(boolean show) {
+        exo.modificationDate();
         class UpdateExo extends AsyncTask<Void, Void, Exercice> {
 
             @Override
@@ -338,36 +339,41 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
             @Override
             protected void onPostExecute(Exercice exercice) {
                 super.onPostExecute(exercice);
-                alertFinExercice();
+                alertFinExercice(show);
             }
         }
         UpdateExo gt = new UpdateExo();
         gt.execute();
     }
 
-    private void alertFinExercice() {
-        new AlertDialog.Builder(AllezSportif.this)
-                .setTitle("Exercice fini !")
-                .setMessage("Bravo, vous avez fini cet exercice !\nVous avez obtenu une étoile, c'est la " + exo.getNbEtoilesF() + " sur cet exerice !")
+    private void alertFinExercice(boolean show) {
+        if (show) {
+            new AlertDialog.Builder(AllezSportif.this)
+                    .setTitle("Exercice fini !")
+                    .setMessage("Bravo, vous avez fini cet exercice !\nVous avez obtenu une étoile, c'est la " + exo.getNbEtoilesF() + " sur cet exerice !")
 
-                // Specifying a listener allows you to take an action before dismissing the dialog.
-                // The dialog is automatically dismissed when a dialog button is clicked.
-                .setPositiveButton("Retour à la liste", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-                })
+                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                    // The dialog is automatically dismissed when a dialog button is clicked.
+                    .setPositiveButton("Retour à la liste", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+                    })
 
-                // A null listener allows the button to dismiss the dialog and take no further action.
-                .setNegativeButton("Refaire cet exercice", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        setResult(RESULT_FIRST_USER);
-                        finish();
-                    }
-                })
-                .setIcon(android.R.drawable.btn_star_big_on)
-                .show();
+                    // A null listener allows the button to dismiss the dialog and take no further action.
+                    .setNegativeButton("Refaire cet exercice", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            setResult(RESULT_FIRST_USER);
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.btn_star_big_on)
+                    .show();
+        } else {
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 
 }
