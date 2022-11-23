@@ -100,7 +100,7 @@ public class Compteur extends UpdateSource {
     }
 
     public int getMinutes() {
-        return (int) (updatedTime / 1000)/60;
+        return (int) (updatedTime / 1000) / 60;
     }
 
     public int getSecondes() {

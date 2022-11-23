@@ -3,7 +3,6 @@ package com.example.tabata_timer;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Database;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,9 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tabata_timer.database.DatabaseClient;
-import com.example.tabata_timer.database.Exercice;
-
-import org.w3c.dom.Text;
+import com.example.tabata_timer.database.dbExercices.Exercice;
+import com.example.tabata_timer.database.dbSettings.Settings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +61,7 @@ public class Tabata_Timer extends AppCompatActivity {
                 fils.setOrientation(LinearLayout.HORIZONTAL);
                 fils.setId(id);
                 linear.addView(fils);
-            }else{
+            } else {
                 fils = findViewById(id);
             }
 
@@ -118,8 +116,6 @@ public class Tabata_Timer extends AppCompatActivity {
         });
 
 
-
-
         // Ajouter un événement au bouton de modification
         modifier.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,15 +131,12 @@ public class Tabata_Timer extends AppCompatActivity {
         });
 
 
-
         // Ajouter un événement au bouton de suppression
         supprimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                new AlertDialog.Builder(Tabata_Timer.this)
-                        .setTitle("Supprimer " + exercice.getNomExercice())
-                        .setMessage("Voulez-vous vraiment supprimer l'exercice " + exercice.getNomExercice())
+                new AlertDialog.Builder(Tabata_Timer.this).setTitle("Supprimer " + exercice.getNomExercice()).setMessage("Voulez-vous vraiment supprimer l'exercice " + exercice.getNomExercice())
 
                         // Specifying a listener allows you to take an action before dismissing the dialog.
                         // The dialog is automatically dismissed when a dialog button is clicked.
@@ -154,16 +147,14 @@ public class Tabata_Timer extends AppCompatActivity {
                         })
 
                         // A null listener allows the button to dismiss the dialog and take no further action.
-                        .setNegativeButton(android.R.string.no, null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                        .setNegativeButton(android.R.string.no, null).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
         });
 
         return linearTmp;
     }
 
-    public static void setMargins (View v, int l, int r) {
+    public static void setMargins(View v, int l, int r) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
             p.setMargins(l, 0, r, 0);
@@ -185,7 +176,7 @@ public class Tabata_Timer extends AppCompatActivity {
         if ((requestCode == requestCreate || requestCode == requestUpdate || requestCode == requestStart) && resultCode == RESULT_OK) {
             // Mise à jour des taches
             getExercices();
-        }else if (requestCode == requestStart && resultCode == RESULT_FIRST_USER) {
+        } else if (requestCode == requestStart && resultCode == RESULT_FIRST_USER) {
             Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
             startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
 
@@ -195,7 +186,6 @@ public class Tabata_Timer extends AppCompatActivity {
     }
 
 
-
     private void getExercices() {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
@@ -203,9 +193,7 @@ public class Tabata_Timer extends AppCompatActivity {
 
             @Override
             protected List<Exercice> doInBackground(Void... voids) {
-                List<Exercice> exoList = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .getAll();
+                List<Exercice> exoList = mDb.getAppDatabase().exerciceDao().getAll();
                 return exoList;
             }
 
@@ -233,9 +221,7 @@ public class Tabata_Timer extends AppCompatActivity {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                mDb.getAppDatabase()
-                        .exerciceDao()
-                        .delete(exo);
+                mDb.getAppDatabase().exerciceDao().delete(exo);
                 return exo;
             }
 
@@ -254,36 +240,38 @@ public class Tabata_Timer extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Fonction qui trie les Exercices données via leur date de modification, de la plus récente à la plus ancienne.
+     * Groupe de fonctions (TopDownMergeSort, TopDownSplitMerge, TopDownMerge)  issues de Wikipedia https://en.wikipedia.org/wiki/Merge_sort
+     *
+     * @param A ArrayList[Exercice]
+     * @return ArrayList[Exercice]
+     */
     // Array A[] has the items to sort; array B[] is a work array.
-    private ArrayList<Exercice> TopDownMergeSort(ArrayList<Exercice> A)
-    {
+    private ArrayList<Exercice> TopDownMergeSort(ArrayList<Exercice> A) {
         int n = A.size();
         ArrayList<Exercice> B = new ArrayList<>(A);
-        CopyArray(A, 0, n, B);
         return TopDownSplitMerge(B, 0, n, A);   // sort data from B[] into A[]
     }
 
     // Split A[] into 2 runs, sort both runs into B[], merge both runs from B[] to A[]
-// iBegin is inclusive; iEnd is exclusive (A[iEnd] is not in the set).
-    private ArrayList<Exercice> TopDownSplitMerge(ArrayList<Exercice> B, int iBegin, int iEnd, ArrayList<Exercice> A)
-    {
+    // iBegin is inclusive; iEnd is exclusive (A[iEnd] is not in the set).
+    private ArrayList<Exercice> TopDownSplitMerge(ArrayList<Exercice> B, int iBegin, int iEnd, ArrayList<Exercice> A) {
         if (iEnd - iBegin <= 1)                     // if run size == 1
             return B;                                 //   consider it sorted
         // split the run longer than 1 item into halves
         int iMiddle = (iEnd + iBegin) / 2;              // iMiddle = mid point
         // recursively sort both runs from array A[] into B[]
-        TopDownSplitMerge(A, iBegin,  iMiddle, B);  // sort the left  run
-        TopDownSplitMerge(A, iMiddle,    iEnd, B);  // sort the right run
+        TopDownSplitMerge(A, iBegin, iMiddle, B);  // sort the left  run
+        TopDownSplitMerge(A, iMiddle, iEnd, B);  // sort the right run
         // merge the resulting runs from array B[] into A[]
         return TopDownMerge(B, iBegin, iMiddle, iEnd, A);
     }
 
     //  Left source half is A[ iBegin:iMiddle-1].
-// Right source half is A[iMiddle:iEnd-1   ].
-// Result is            B[ iBegin:iEnd-1   ].
-    private ArrayList<Exercice> TopDownMerge(ArrayList<Exercice> A, int iBegin, int iMiddle, int iEnd, ArrayList<Exercice> B)
-    {
+    // Right source half is A[iMiddle:iEnd-1   ].
+    // Result is            B[ iBegin:iEnd-1   ].
+    private ArrayList<Exercice> TopDownMerge(ArrayList<Exercice> A, int iBegin, int iMiddle, int iEnd, ArrayList<Exercice> B) {
         int i = iBegin;
         int j = iMiddle;
 
@@ -301,28 +289,59 @@ public class Tabata_Timer extends AppCompatActivity {
         return B;
     }
 
-    void CopyArray(ArrayList<Exercice> A, int iBegin, int iEnd,  ArrayList<Exercice> B)
-    {
-        for (int k = iBegin; k < iEnd; k++)
-            B.set(k, A.get(k));
-    }
 
-
-
+    /**
+     * trie la liste des exercices, l'exercice le plus "récent" en premier.
+     */
     private void sortListeExercice() {
+        //Si possible, trie les exercices via leur date de modification, de la plus récente à la plus vielle
+        //Avec un comparateur.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             listeExercices.sort(Collections.reverseOrder(Comparator.comparing(Exercice::getLastModified)));
-        }else{
+        } else {
+            //Sinon, on fait appel à une série de fonctions issues de Wikipedia
             listeExercices = new ArrayList<>(TopDownMergeSort(listeExercices));
         }
     }
 
+    /**
+     * Continue / recommence le dernier exercice lancé
+     *
+     * @param view
+     */
     public void onResumeLastWorkout(View view) {
+        //Récupération de l'ID du premier exercice de la liste triée
         int id = (int) listeExercices.get(0).getId();
         Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
         startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
 
         // Lancement de la demande de changement d'activité
         startActivityForResult(startExoIntent, requestStart);
+    }
+
+
+    private void setSettings(Settings settings) {
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        class getSettings extends AsyncTask<Void, Void, Settings> {
+
+            @Override
+            protected Settings doInBackground(Void... voids) {
+                Settings settings = mDb.getAppDatabase().settingsDao().getSettings();
+                return settings;
+            }
+
+            @Override
+            protected void onPostExecute(Settings settings) {
+                super.onPostExecute(settings);
+                getExercices();
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        getSettings gt = new getSettings();
+        gt.execute();
     }
 }

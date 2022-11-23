@@ -2,10 +2,8 @@ package com.example.tabata_timer;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Update;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,12 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tabata_timer.database.DatabaseClient;
-import com.example.tabata_timer.database.Exercice;
+import com.example.tabata_timer.database.dbExercices.Exercice;
 import com.example.tabata_timer.utility.Compteur;
 import com.example.tabata_timer.utility.OnFinishListenner;
 import com.example.tabata_timer.utility.OnUpdateListener;
-
-import org.w3c.dom.Text;
 
 public class AllezSportif extends AppCompatActivity implements OnUpdateListener, OnFinishListenner {
 
@@ -65,6 +61,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
     /**
      * Récupère l'objet Exercice grâce à un ID.
+     *
      * @param id
      */
     private void getExercice(int id) {
@@ -74,9 +71,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                Exercice exo = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .findExerciceByID(id);
+                Exercice exo = mDb.getAppDatabase().exerciceDao().findExerciceByID(id);
                 return exo;
             }
 
@@ -90,6 +85,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 //Récupération de l'exercice
                 exo = exercice;
                 //Affichage des info de cet exo
+                exo.modificationDate();
                 afficherInfosExercice();
             }
         }
@@ -101,6 +97,11 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
      * Affiche les infos présentes dans l'attribut 'exo'
      */
     private void afficherInfosExercice() {
+
+        if (exo.getNumeroRepetition() != 1 || exo.getNumeroSeance() != 1 || !exo.getIsSport() || exo.getIsRepos() || exo.getIsReposLong()) {
+            popUpContinue();
+        }
+
         //Nom de l'exercice
         TextView nomExo = findViewById(R.id.nomExo);
         nomExo.setText(String.valueOf(exo.getNomExercice()));
@@ -124,6 +125,26 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         if (!isFirstExo) {
             compteur.start();
         }
+    }
+
+
+    /**
+     * Affiche un popUp si l'exercice n'a pas été terminé précédemment
+     * Si l'utilisateur shouaite recommencer, l'exercice est réinitialisé, sinon il ne se passe rien.
+     */
+    private void popUpContinue() {
+        new AlertDialog.Builder(AllezSportif.this).setTitle("Reprendre l'exercice ?").setMessage("Vous n'avez pas fini cet exercice la dernère fois. Voulez-vous le reprendre là où vous vous étiez arrêté ?")
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(android.R.string.yes, null)
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no + ", reprendre du début", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        exo.resetExo();
+                    }
+                }).setIcon(android.R.drawable.ic_menu_rotate).show();
     }
 
     /**
@@ -206,29 +227,45 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     
      */
 
+    /**
+     * Récupère la liste des actions suivantes et les ajoute dans le layout.
+     */
     public void addExerciceToList() {
+        //Récupération et "vidage" du layout
         LinearLayout linearLayout = findViewById(R.id.linearListeActions);
         linearLayout.removeAllViews();
 
+        //Récupération du type de la première activité (Effort, Repos, Repos Long)
         TextView typeActivite = findViewById(R.id.typeAction);
+        //Récupération des activités qui suivent la première activité
         String[][][] listeActivites = exo.getFollowingActivities(String.valueOf(typeActivite.getText()));
 
+        // -1 car l'index du 1er élément est 0
         int iValue = exo.getNumeroSeance() - 1;
 
+        //Pour chaque Séance (Nombre Y de groupe de X séries de Effort - Repos)
         for (int i = iValue; i < listeActivites.length; i++) {
+            //On récupère le nombre x de répétitions (-1 pour l'index du 1er élément)
             int jValue = exo.getNumeroRepetition() - 1;
+            //Pour les Séances != la 1ere, on remet j à 0;
             if (i != iValue) {
                 jValue = 0;
             }
+            //Pour chaque répétition :
             for (int j = jValue; j < listeActivites[i].length; j++) {
                 TextView textView;
+                //Si la répétition n'est pas vide :
                 if (listeActivites[i][j][0] != null || listeActivites[i][j][1] != null) {
+                    //On affiche le numéro de la séance et de la répétition
                     textView = new TextView(this);
                     textView.setText("seance=" + (i + 1) + " repetiton=" + (j + 1));
                     linearLayout.addView(textView);
 
+                    //Puis, pour chaque élément de la répétition :
                     for (int k = 0; k < listeActivites[i][j].length; k++) {
+                        //Si l'élément n'est pas vide :
                         if (listeActivites[i][j][k] != null) {
+                            //On affiche la valeur contenue dans l'array
                             textView = new TextView(this);
                             textView.setText(listeActivites[i][j][k]);
                             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -241,13 +278,15 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         }
     }
 
+
+    /**
+     * Met en pause ou relance le timer.
+     *
+     * @param view
+     */
     public void onPauseResumeTimer(View view) {
         if (!compteur.getIsStarted()) {
             onStartTimer();
-            if (exo.getIsSport()) {
-                MediaPlayer song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
-                song.start();
-            }
         } else {
             onPauseTimer();
         }
@@ -256,6 +295,10 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
     // Lancer le compteur
     private void onStartTimer() {
+        if (exo.getIsSport()) {
+            MediaPlayer song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
+            song.start();
+        }
         compteur.start();
     }
 
@@ -269,9 +312,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     private void miseAJour() {
 
         // Affichage des informations du compteur
-        timer.setText("" + compteur.getMinutes() + ":"
-                + String.format("%02d", compteur.getSecondes()) + ":"
-                + String.format("%03d", compteur.getMillisecondes()));
+        timer.setText("" + compteur.getMinutes() + ":" + String.format("%02d", compteur.getSecondes()) + ":" + String.format("%03d", compteur.getMillisecondes()));
 
     }
 
@@ -305,9 +346,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     }
 
     public void onGiveUp(View view) {
-        new AlertDialog.Builder(AllezSportif.this)
-                .setTitle("Abandon ?")
-                .setMessage("Voulez-vous vraiment abandonner cet exercice ?")
+        new AlertDialog.Builder(AllezSportif.this).setTitle("Abandon ?").setMessage("Voulez-vous vraiment abandonner cet exercice ?")
 
                 // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
@@ -319,9 +358,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 })
 
                 // A null listener allows the button to dismiss the dialog and take no further action.
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+                .setNegativeButton(android.R.string.no, null).setIcon(android.R.drawable.ic_dialog_alert).show();
     }
 
     private void endExercice(boolean show) {
@@ -330,9 +367,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                mDb.getAppDatabase()
-                        .exerciceDao()
-                        .update(exo);
+                mDb.getAppDatabase().exerciceDao().update(exo);
                 return exo;
             }
 
@@ -348,9 +383,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
     private void alertFinExercice(boolean show) {
         if (show) {
-            new AlertDialog.Builder(AllezSportif.this)
-                    .setTitle("Exercice fini !")
-                    .setMessage("Bravo, vous avez fini cet exercice !\nVous avez obtenu une étoile, c'est la " + exo.getNbEtoilesF() + " sur cet exerice !")
+            new AlertDialog.Builder(AllezSportif.this).setTitle("Exercice fini !").setMessage("Bravo, vous avez fini cet exercice !\nVous avez obtenu une étoile, c'est la " + exo.getNbEtoilesF() + " sur cet exerice !")
 
                     // Specifying a listener allows you to take an action before dismissing the dialog.
                     // The dialog is automatically dismissed when a dialog button is clicked.
@@ -367,9 +400,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                             setResult(RESULT_FIRST_USER);
                             finish();
                         }
-                    })
-                    .setIcon(android.R.drawable.btn_star_big_on)
-                    .show();
+                    }).setIcon(android.R.drawable.btn_star_big_on).show();
         } else {
             setResult(RESULT_OK);
             finish();

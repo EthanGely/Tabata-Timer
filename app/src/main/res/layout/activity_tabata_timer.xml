@@ -32,7 +32,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
             android:onClick="onResumeLastWorkout"
-            android:text="Continuer le dernier exercice"
+            android:text="Continuer le dernier settings"
             android:backgroundTint="@color/grey"
             android:clickable="false"
             />
@@ -44,7 +44,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
             android:onClick="onCreateWorkout"
-            android:text="Créer un exercice"
+            android:text="Créer un settings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resumeWorkout"
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
-            android:text="continuer le dernier exercice"
+            android:text="continuer le dernier settings"
             android:backgroundTint="@color/grey"
             android:clickable="false"
             />

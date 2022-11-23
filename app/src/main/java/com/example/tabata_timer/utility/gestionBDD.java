@@ -3,7 +3,7 @@ package com.example.tabata_timer.utility;
 import android.os.AsyncTask;
 
 import com.example.tabata_timer.database.DatabaseClient;
-import com.example.tabata_timer.database.Exercice;
+import com.example.tabata_timer.database.dbExercices.Exercice;
 
 import java.util.List;
 
@@ -33,9 +33,7 @@ public class gestionBDD {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                Exercice exo = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .findExerciceByID(id);
+                Exercice exo = mDb.getAppDatabase().exerciceDao().findExerciceByID(id);
                 return exo;
             }
 
@@ -57,9 +55,7 @@ public class gestionBDD {
 
             @Override
             protected List<Exercice> doInBackground(Void... voids) {
-                List<Exercice> exoList = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .getAll();
+                List<Exercice> exoList = mDb.getAppDatabase().exerciceDao().getAll();
                 return exoList;
             }
 
@@ -84,9 +80,7 @@ public class gestionBDD {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                mDb.getAppDatabase()
-                        .exerciceDao()
-                        .delete(exo);
+                mDb.getAppDatabase().exerciceDao().delete(exo);
                 return exo;
             }
 

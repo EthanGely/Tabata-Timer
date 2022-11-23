@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/exercice"
+            android:id="@+id/settings"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
@@ -61,7 +61,7 @@
             android:id="@+id/Exo_sport"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="30s exercice"
+            android:text="30s settings"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp"

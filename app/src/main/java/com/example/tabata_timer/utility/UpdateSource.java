@@ -5,7 +5,6 @@ import java.util.ArrayList;
 /**
  * Classe proposant un mécanisme d'abonnement auditeur/source
  * En association avec l'interface OnUpdateListener
- *
  */
 public class UpdateSource {
 

@@ -3,7 +3,6 @@ package com.example.tabata_timer.utility;
 /**
  * Interface intervenant dans le mécanisme d'abonnement auditeur/source
  * En association avec la classe UpdateSource
- *
  */
 public interface OnUpdateListener {
 

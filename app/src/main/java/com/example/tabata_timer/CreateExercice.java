@@ -2,7 +2,6 @@ package com.example.tabata_timer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +12,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.tabata_timer.database.DatabaseClient;
-import com.example.tabata_timer.database.Exercice;
+import com.example.tabata_timer.database.dbExercices.Exercice;
 
 public class CreateExercice extends AppCompatActivity {
 
@@ -70,9 +69,7 @@ public class CreateExercice extends AppCompatActivity {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                Exercice exo = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .findExerciceByID(id);
+                Exercice exo = mDb.getAppDatabase().exerciceDao().findExerciceByID(id);
                 return exo;
             }
 
@@ -157,9 +154,7 @@ public class CreateExercice extends AppCompatActivity {
             protected Exercice doInBackground(Void... voids) {
 
                 // adding to database
-                Exercice exo = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .findExerciceByName(nomExo, idExo);
+                Exercice exo = mDb.getAppDatabase().exerciceDao().findExerciceByName(nomExo, idExo);
                 return exo;
             }
 
@@ -264,9 +259,7 @@ public class CreateExercice extends AppCompatActivity {
                 Exercice exo = new Exercice(nomExo, tempsSport, tempsRepos, nbReps, tempsReposLong, nbSeances);
 
                 // adding to database
-                long id = mDb.getAppDatabase()
-                        .exerciceDao()
-                        .insert(exo);
+                long id = mDb.getAppDatabase().exerciceDao().insert(exo);
 
                 // mettre à jour l'id de la tache
                 // Nécessaire si on souhaite avoir accès à l'id plus tard dans l'activité
@@ -300,9 +293,7 @@ public class CreateExercice extends AppCompatActivity {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                mDb.getAppDatabase()
-                        .exerciceDao()
-                        .update(exo);
+                mDb.getAppDatabase().exerciceDao().update(exo);
                 return exo;
             }
 

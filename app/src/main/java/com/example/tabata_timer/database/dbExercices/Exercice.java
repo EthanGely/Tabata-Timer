@@ -1,6 +1,7 @@
-package com.example.tabata_timer.database;
+package com.example.tabata_timer.database.dbExercices;
 
 import java.util.Date;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
@@ -41,7 +42,8 @@ public class Exercice {
 
 
     /////////////////////////-- Constructeurs --///////////////////////////
-    public Exercice() {}
+    public Exercice() {
+    }
 
     public Exercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances) {
         //On ajoute le nom de l'exercice et les valeurs associées - date de modification mise à jour
@@ -169,12 +171,11 @@ public class Exercice {
     /**
      * Si la durée donnée (en secondes) est un nombre d'heures entières, ou un nombre de minutes entières,
      * la fonction renverra "heures" ou "minutes". Sinon, "secondes" sera renvoyé.
-     *
+     * <p>
      * Exemple : getTypeOfTime(3600) = "heures"; getTypeOfTime(3660) = "minutes"; //Car 3660 = 1h01.
      *
      * @param secondes
      * @return String
-     *
      */
     public String getTypeOfTime(int secondes) {
         int hours = secondes / 3600;
@@ -195,7 +196,6 @@ public class Exercice {
      *
      * @param secondes
      * @return int
-     *
      */
     public int getBestTime(int secondes) {
         double hours = secondes / 3600;
@@ -242,7 +242,6 @@ public class Exercice {
      * Retourne la durée de l'activité en cours
      *
      * @return int
-     *
      */
     public int getTempsEnCours() {
         if (isSport) {
@@ -261,7 +260,6 @@ public class Exercice {
      * Renvoie "true" si l'exercice est entièrement terminé, false sinon.
      *
      * @return boolean
-     *
      */
     public boolean tempsFini() {
         if (isSport) {
@@ -300,7 +298,6 @@ public class Exercice {
      * @param nombreDeRepetitions
      * @param reposLong
      * @param nombreDeSeances
-     *
      */
     public void modifierExercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances) {
         setNomExercice(nomExercice);
@@ -398,6 +395,7 @@ public class Exercice {
 
     /**
      * Retourne une chaine de caractères correspondant à l'activité en cours.
+     *
      * @return Nom_activité
      */
     public String getTypeAction() {
@@ -461,7 +459,7 @@ public class Exercice {
         return nbEtoiles + suffixe;
     }
 
-    private void resetExo() {
+    public void resetExo() {
         numeroRepetition = 1;
         numeroSeance = 1;
         isSport = true;

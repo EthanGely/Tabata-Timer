@@ -83,7 +83,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="25dp"
         android:onClick="onGiveUp"
-        android:text="Abandonner l'exercice"
+        android:text="Abandonner l'settings"
         android:backgroundTint="@color/blue"
         />
 

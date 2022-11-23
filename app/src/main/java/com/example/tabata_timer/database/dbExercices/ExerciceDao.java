@@ -1,5 +1,4 @@
-package com.example.tabata_timer.database;
-
+package com.example.tabata_timer.database.dbExercices;
 
 
 import androidx.room.Dao;
