@@ -98,7 +98,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
      */
     private void afficherInfosExercice() {
 
-        if (exo.getNumeroRepetition() != 1 || exo.getNumeroSeance() != 1 || !exo.getIsSport() || exo.getIsRepos() || exo.getIsReposLong()) {
+        if (isFirstExo && (exo.getNumeroRepetition() != 1 || exo.getNumeroSeance() != 1 || !exo.getIsSport() || exo.getIsRepos() || exo.getIsReposLong())) {
             popUpContinue();
         }
 
@@ -140,9 +140,11 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 .setPositiveButton(android.R.string.yes, null)
 
                 // A null listener allows the button to dismiss the dialog and take no further action.
-                .setNegativeButton(android.R.string.no + ", reprendre du début", new DialogInterface.OnClickListener() {
+                .setNegativeButton( "non, reprendre du début", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         exo.resetExo();
+
+                        saveExercice();
                     }
                 }).setIcon(android.R.drawable.ic_menu_rotate).show();
     }
@@ -361,6 +363,26 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 .setNegativeButton(android.R.string.no, null).setIcon(android.R.drawable.ic_dialog_alert).show();
     }
 
+
+    private void saveExercice() {
+        exo.modificationDate();
+        class UpdateExo extends AsyncTask<Void, Void, Exercice> {
+
+            @Override
+            protected Exercice doInBackground(Void... voids) {
+                mDb.getAppDatabase().exerciceDao().update(exo);
+                return exo;
+            }
+
+            @Override
+            protected void onPostExecute(Exercice exercice) {
+                super.onPostExecute(exercice);
+                getExercice((int) exo.getId());
+            }
+        }
+        UpdateExo gt = new UpdateExo();
+        gt.execute();
+    }
     private void endExercice(boolean show) {
         exo.modificationDate();
         class UpdateExo extends AsyncTask<Void, Void, Exercice> {

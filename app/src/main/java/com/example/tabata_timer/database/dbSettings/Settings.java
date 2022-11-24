@@ -10,10 +10,7 @@ public class Settings {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-
-
     private boolean isSoundOn = true;
-    private int volume = 100;
 
 
     ///////////////////////////////////////////////////////////////////////
@@ -33,9 +30,6 @@ public class Settings {
         return isSoundOn;
     }
 
-    public int getVolume() {
-        return volume;
-    }
 
     public void setId(int id) {
         this.id = id;
@@ -44,10 +38,4 @@ public class Settings {
     public void setSoundOn(boolean soundOn) {
         this.isSoundOn = soundOn;
     }
-
-    public void setVolume(int volume) {
-        this.volume = volume;
-    }
-
-
 }

@@ -1,11 +1,8 @@
 package com.example.tabata_timer;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +12,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.dbExercices.Exercice;
@@ -36,6 +37,8 @@ public class Tabata_Timer extends AppCompatActivity {
     // DATA
     private DatabaseClient mDb;
 
+    private Settings settings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,8 @@ public class Tabata_Timer extends AppCompatActivity {
 
         // Récupération du DatabaseClient
         mDb = DatabaseClient.getInstance(getApplicationContext());
+
+        getSettings();
 
         getExercices();
     }
@@ -84,7 +89,6 @@ public class Tabata_Timer extends AppCompatActivity {
         TextView repsExo = linearTmp.findViewById(R.id.Exo_reps);
         TextView reposLongExo = linearTmp.findViewById(R.id.Exo_repos_long);
         TextView seancesExo = linearTmp.findViewById(R.id.Exo_seances);
-        TextView date = linearTmp.findViewById(R.id.dateExo);
 
         ImageButton modifier = linearTmp.findViewById(R.id.modifierExo);
         ImageButton supprimer = linearTmp.findViewById(R.id.supprimerExo);
@@ -99,7 +103,6 @@ public class Tabata_Timer extends AppCompatActivity {
         repsExo.setText(exercice.getRepetitionsF());
         reposLongExo.setText(exercice.getReposLongF());
         seancesExo.setText(exercice.getSeancesF());
-        date.setText((String) exercice.getLastModified().toString());
 
         // Ajouter un événement au bouton de modification
 
@@ -202,6 +205,7 @@ public class Tabata_Timer extends AppCompatActivity {
                 super.onPostExecute(exercices);
                 listeExercices.clear();
                 listeExercices.addAll(exercices);
+                activerDesactiverBoutonReprendre();
                 sortListeExercice();
                 addExercices();
             }
@@ -212,6 +216,17 @@ public class Tabata_Timer extends AppCompatActivity {
         // Création d'un objet de type GetTasks et execution de la demande asynchrone
         GetExercices gt = new GetExercices();
         gt.execute();
+    }
+
+    private void activerDesactiverBoutonReprendre() {
+        Button btnReprendre = findViewById(R.id.resumeWorkout);
+        if (listeExercices.isEmpty()) {
+            btnReprendre.setClickable(false);
+            btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey)));
+        } else {
+            btnReprendre.setClickable(true);
+            btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blue)));
+        }
     }
 
     private void supprimerExercice(Exercice exo) {
@@ -310,38 +325,69 @@ public class Tabata_Timer extends AppCompatActivity {
      * @param view
      */
     public void onResumeLastWorkout(View view) {
-        //Récupération de l'ID du premier exercice de la liste triée
-        int id = (int) listeExercices.get(0).getId();
-        Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
-        startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
+        if (!listeExercices.isEmpty()) {
+            //Récupération de l'ID du premier exercice de la liste triée
+            int id = (int) listeExercices.get(0).getId();
+            Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
+            startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
 
-        // Lancement de la demande de changement d'activité
-        startActivityForResult(startExoIntent, requestStart);
+            // Lancement de la demande de changement d'activité
+            startActivityForResult(startExoIntent, requestStart);
+        }
+
     }
 
 
-    private void setSettings(Settings settings) {
+    private void getSettings() {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
-        class getSettings extends AsyncTask<Void, Void, Settings> {
+        class GetSettings extends AsyncTask<Void, Void, Settings> {
 
             @Override
             protected Settings doInBackground(Void... voids) {
-                Settings settings = mDb.getAppDatabase().settingsDao().getSettings();
-                return settings;
+                Settings stg = mDb.getAppDatabase().settingsDao().getSettings();
+                return stg;
             }
 
             @Override
-            protected void onPostExecute(Settings settings) {
-                super.onPostExecute(settings);
-                getExercices();
+            protected void onPostExecute(Settings stg) {
+                super.onPostExecute(stg);
+                if (stg == null) {
+                    setSettings(new Settings());
+                }
+                settings = stg;
             }
         }
 
         //////////////////////////
         // IMPORTANT bien penser à executer la demande asynchrone
         // Création d'un objet de type GetTasks et execution de la demande asynchrone
-        getSettings gt = new getSettings();
+        GetSettings gt = new GetSettings();
+        gt.execute();
+    }
+
+    private void setSettings(Settings settings) {
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        class GetSettings extends AsyncTask<Void, Void, Settings> {
+
+            @Override
+            protected Settings doInBackground(Void... voids) {
+                mDb.getAppDatabase().settingsDao().insert(settings);
+                return settings;
+            }
+
+            @Override
+            protected void onPostExecute(Settings settings) {
+                super.onPostExecute(settings);
+                getSettings();
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        GetSettings gt = new GetSettings();
         gt.execute();
     }
 }

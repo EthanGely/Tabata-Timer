@@ -107,16 +107,6 @@
             android:textSize="20sp"
             android:visibility="visible" />
 
-        <TextView
-            android:id="@+id/dateExo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="12 avril 2022"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:visibility="visible" />
-
         <Button
             android:id="@+id/startExercice"
             android:layout_width="wrap_content"

@@ -25,17 +25,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <Button
-            android:id="@+id/resumeWorkout"
-            android:layout_width="300sp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="50dp"
-            android:onClick="onResumeLastWorkout"
-            android:text="Continuer le dernier settings"
-            android:backgroundTint="@color/grey"
-            android:clickable="false"
-            />
+
 
         <Button
             android:id="@+id/createWorkout"
@@ -44,7 +34,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
             android:onClick="onCreateWorkout"
-            android:text="Créer un settings"
+            android:text="Créer un exercice"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resumeWorkout"
@@ -82,16 +72,18 @@
 
 
 
-        <Button
-            android:id="@+id/end"
-            android:layout_width="300sp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="25dp"
-            android:text="continuer le dernier settings"
-            android:backgroundTint="@color/grey"
-            android:clickable="false"
-            />
+    <Button
+        android:id="@+id/resumeWorkout"
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="10dp"
+        android:onClick="onResumeLastWorkout"
+        android:text="Continuer le dernier exercice"
+        android:backgroundTint="@color/grey"
+        android:clickable="false"
+        />
 
 
 

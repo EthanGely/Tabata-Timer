@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
-                android:text="Création d'un settings"
+                android:text="Création d'un exercice"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="40sp"/>
@@ -32,7 +32,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nom de l'settings"
+                android:text="Nom de l'exercice"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:layout_marginTop="50dp"/>
@@ -43,7 +43,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="@color/grey"
-                android:hint="Entrez un nom d'settings"
+                android:hint="Entrez un nom d'exercice"
                 android:maxLines="1"
                 />
 
@@ -205,7 +205,7 @@
                 android:layout_marginTop="25dp"
                 android:backgroundTint="@color/blue"
                 android:onClick="onCreateWorkout"
-                android:text="Créer l'settings" />
+                android:text="Créer l'exercice" />
 
             <Button
                 android:id="@+id/cancel"

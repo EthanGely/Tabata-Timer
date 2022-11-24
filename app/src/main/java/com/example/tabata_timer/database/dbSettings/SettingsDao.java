@@ -15,7 +15,7 @@ public interface SettingsDao {
     @Query("SELECT * FROM settings")
     List<Settings> getAll();
 
-    @Query("SELECT * FROM settings WHERE id = 0")
+    @Query("SELECT * FROM settings WHERE id = 1")
     Settings getSettings();
 
     @Insert
