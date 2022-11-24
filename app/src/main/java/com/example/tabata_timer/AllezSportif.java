@@ -1,17 +1,21 @@
 package com.example.tabata_timer;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.dbExercices.Exercice;
@@ -31,7 +35,6 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     protected TextView timer;
     private Exercice exo;
     private boolean isFirstExo = true;
-    private boolean isPrepared = false;
 
     private Settings settings;
 
@@ -116,10 +119,25 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         //Mise à jour de la liste des prochaines activitées
         updateListeActivites();
 
+        int durationMillis = exo.getMiliSec(exo.getTempsEnCours());
+
         //TIMER
         timer = findViewById(R.id.timer);
         //Récupération du temps de l'activité en cours
-        compteur.setTimer(exo.getMiliSec(exo.getTempsEnCours()));
+        compteur.setTimer(durationMillis);
+
+        ProgressBar pBar = findViewById(R.id.progress);
+        pBar.setMax(durationMillis);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            pBar.setMin(0);
+        }
+
+        if (exo.getIsSport()) {
+            pBar.setProgress(durationMillis);
+        } else {
+            pBar.setProgress(0);
+        }
+
 
         // Mise à jour graphique
         miseAJour();
@@ -162,7 +180,6 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         String lastTypeExo = (String) typeExo.getText();
 
         //Si le dernier exercice est une préparation, on ne modifie rien (un Exercice n'a pas conaissance de la préparation)
-        if (!lastTypeExo.contains("Préparez-vous !")) {
 
             //puis on récupère les numéros actuels de rep/séance,
             int numRepetition = exo.getNumeroRepetition();
@@ -212,8 +229,6 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
             }
             
              */
-
-        }
     }
 
     /*public void addExerciceToList(String text, LinearLayout linearLayout, int numSeance, int numRepetition) {
@@ -290,9 +305,14 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
      * @param view
      */
     public void onPauseResumeTimer(View view) {
+        Button btn = findViewById(R.id.pauseResume);
         if (!compteur.getIsStarted()) {
+            btn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.yellow)));
+            btn.setText("Pause");
             onStartTimer();
         } else {
+            btn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.green)));
+            btn.setText("Démarrer");
             onPauseTimer();
         }
     }
@@ -306,6 +326,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
             song.start();
         }
         compteur.start();
+        //pBar.getProgressDrawable().setColorFilter(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     private MediaPlayer setVolume(MediaPlayer song) {
@@ -323,35 +344,19 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
     // Mise à jour graphique
     private void miseAJour() {
-
         // Affichage des informations du compteur
         timer.setText("" + compteur.getMinutes() + ":" + String.format("%02d", compteur.getSecondes()) + ":" + String.format("%03d", compteur.getMillisecondes()));
+        ProgressBar pBar = findViewById(R.id.progress);
 
         if (exo.getIsSport()) {
-            timer.setTextColor(getResources().getColor(R.color.white));
-            if (compteur.getSecondes() <= 15) {
-                timer.setTextColor(getResources().getColor(R.color.yellow));
-            }
-            if (compteur.getSecondes() <= 10) {
-                timer.setTextColor(getResources().getColor(R.color.orange));
-            }
-            if (compteur.getSecondes() <= 5) {
-                timer.setTextColor(getResources().getColor(R.color.red));
-            }
-        }else {
-            if ((exo.getIsRepos() || exo.getIsReposLong()) && !isPrepared) {
-                timer.setTextColor(getResources().getColor(R.color.white));
-            } else if ((exo.getIsRepos() || exo.getIsReposLong()) && isPrepared) {
-                if (compteur.getSecondes() == 2) {
-                    timer.setTextColor(getResources().getColor(R.color.yellow));
-                }
-                if (compteur.getSecondes() == 1) {
-                    timer.setTextColor(getResources().getColor(R.color.orange));
-                }
-                if (compteur.getSecondes() == 0) {
-                    timer.setTextColor(getResources().getColor(R.color.red));
-                }
-            }
+            pBar.setProgress(exo.getMiliSec(exo.getTempsEnCours()) - (exo.getMiliSec(exo.getTempsEnCours()) - compteur.getRemainingMilis()));
+        } else {
+            pBar.setProgress(exo.getMiliSec(exo.getTempsEnCours()) - compteur.getRemainingMilis());
+        }
+
+        if ((exo.getIsRepos() || exo.getIsReposLong()) && compteur.getSecondes() <= 2) {
+            TextView t = findViewById(R.id.typeAction);
+            t.setText("Préparez-vous !");
         }
     }
 
@@ -366,20 +371,9 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         isFirstExo = false;
         compteur.pause();
 
-        //Temps de préparation après un repos / repos long
-        if ((exo.getIsRepos() || exo.getIsReposLong()) && !isPrepared) {
-            compteur.setTimer(3000);
-            TextView typeAction = findViewById(R.id.typeAction);
-            typeAction.setText(String.valueOf("Préparez-vous !"));
-            compteur.start();
-            isPrepared = true;
-            return;
-        }
-
         if (exo.tempsFini()) {
             endExercice(true);
         } else {
-            isPrepared = false;
             afficherInfosExercice();
         }
     }

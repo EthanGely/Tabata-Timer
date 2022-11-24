@@ -232,7 +232,6 @@ public class CreateExercice extends AppCompatActivity {
             tempsReposInt = getTempsEnSecondes(tempsReposInt, typeTempsRepos);
             reposLongInt = getTempsEnSecondes(reposLongInt, typeTempsReposLong);
 
-
             if (id > 0) {
                 exerciceSave.modifierExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt);
                 modifierExercice(exerciceSave);
@@ -263,6 +262,7 @@ public class CreateExercice extends AppCompatActivity {
 
                 // creating a task
                 Exercice exo = new Exercice(nomExo, tempsSport, tempsRepos, nbReps, tempsReposLong, nbSeances);
+                exo.resetExo();
 
                 // adding to database
                 long id = mDb.getAppDatabase().exerciceDao().insert(exo);
@@ -299,6 +299,7 @@ public class CreateExercice extends AppCompatActivity {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
+                exo.resetExo();
                 mDb.getAppDatabase().exerciceDao().update(exo);
                 return exo;
             }

@@ -44,6 +44,15 @@
         android:textColor="@color/white"
         android:textSize="40sp"/>
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress"
+        android:max="100"
+        android:progress="100"
+        />
+
 
         <ScrollView
             android:id="@+id/scroll"
@@ -73,7 +82,7 @@
         android:layout_marginTop="50dp"
         android:onClick="onPauseResumeTimer"
         android:text="Démarrer"
-        android:backgroundTint="@color/grey"
+        android:backgroundTint="@color/green"
         />
 
     <Button
@@ -84,7 +93,7 @@
         android:layout_marginTop="25dp"
         android:onClick="onGiveUp"
         android:text="Abandonner l'exercice"
-        android:backgroundTint="@color/blue"
+        android:backgroundTint="@color/red"
         />
 
 

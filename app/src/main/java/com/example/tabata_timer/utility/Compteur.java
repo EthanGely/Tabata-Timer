@@ -112,4 +112,8 @@ public class Compteur extends UpdateSource {
         return (int) (updatedTime % 1000);
     }
 
+    public int getRemainingMilis() {
+        return (int) updatedTime;
+    }
+
 }

@@ -15,7 +15,8 @@ Bon sport !
 ### TODO
 
 - [ ] Sons à chaque changement d'action pendant un exercice.
-- [ ] Changer la couleur du chrono en fonction du temps restant.
+- [ ] Design plus attrayant.
+- [ ] Test du con.
 
 ### DONE
 
@@ -33,16 +34,17 @@ Bon sport !
 - [X] Possibilité de reprendre ou de recommencer l'exercice.
 - [X] Implémenter la classe / table Settings (sauvegarde des parametres utilisateur)
 - [X] Possibilité d'enlever les effets sonores.
+- [X] Si l'exercice est modifié, on réinitialise la progression (sauf les étoiles).
+- [X] Barre de progression
 
 ### NEEDS CHECK
 
 - [X] Si les temps sont donnés en minutes/heures vérifier que le chrono soit bien réglé.
 
-## Description technique
+## Description de l'applicaton
 
 - L'application permet de créer des exercice, en spécifiant leur nom, différents temps, nombre de
-  séances, de répétitions, puis de les lancer avec un chrono qui enchaîne automatiquement les tâches
-  à faire.
+  séances, de répétitions, puis de les lancer avec un chrono et une barre de progression.les tâches à faire sont enchaînées automatiquement.
 - Pendant un exercice, une liste déroulante permet de visualiser les prochaines tâches ainsi que leur
   durée. Cette liste est mise à jour à chaque fin te tâche.
 - Chaque exercice peut être modifié ou supprimé.
@@ -50,3 +52,6 @@ Bon sport !
   à un nom déjà présent dans la BDD, l'exercice sera sauvegardé avec le nom
   nomDonné**(1)**. Le numéro est incrémenté si nomDonné**(1)** est déjà utilisé.
 - L'utilisateur peut choisir à tout moment de couper le son de l'application. Ce paramètre est stocké en BDD, donc sauvegardé entre les sessions.
+- Si un exercice est modifié, la progression (potentielle) de l'utilisateur sera predue.
+- Chaque exercice dispose de son compteur de réussite (étoiles). Cette fonctionnalité est assez inutile.
+- L'utilisateur à la possibilité de couper les sons de l'application depuis la page d'accueil, ou pendant un exercice.
