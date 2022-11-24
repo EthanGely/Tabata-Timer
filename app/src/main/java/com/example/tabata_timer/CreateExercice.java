@@ -1,7 +1,10 @@
 package com.example.tabata_timer;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -43,6 +46,8 @@ public class CreateExercice extends AppCompatActivity {
         final Spinner spinnerTempsRepos = (Spinner) findViewById(R.id.chxRepos);
         final Spinner spinnerTempsReposLong = (Spinner) findViewById(R.id.chxReposLong);
 
+        Button btnSuppr = findViewById(R.id.supprimerExo);
+
         String[] typesTemps = {"secondes", "minutes", "heures"};
         ArrayAdapter<String> dataAdapterR = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typesTemps);
         dataAdapterR.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -57,6 +62,7 @@ public class CreateExercice extends AppCompatActivity {
                 finish();
             }
             //Récupère et affiche les données de l'exercice
+            btnSuppr.setVisibility(View.VISIBLE);
             getExercice(id);
         }
     }
@@ -311,6 +317,48 @@ public class CreateExercice extends AppCompatActivity {
         // IMPORTANT bien penser à executer la demande asynchrone
         // Création d'un objet de type GetTasks et execution de la demande asynchrone
         ModifierExercices gt = new ModifierExercices();
+        gt.execute();
+    }
+
+    public void onDeleteWorkout(View view) {
+        new AlertDialog.Builder(CreateExercice.this).setTitle("Supprimer " + exerciceSave.getNomExercice()).setMessage("Voulez-vous vraiment supprimer l'exercice " + exerciceSave.getNomExercice())
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        supprimerExercice(exerciceSave);
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null).setIcon(android.R.drawable.ic_dialog_alert).show();
+    }
+
+    private void supprimerExercice(Exercice exo) {
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        class SupprimerExercices extends AsyncTask<Void, Void, Exercice> {
+
+            @Override
+            protected Exercice doInBackground(Void... voids) {
+                mDb.getAppDatabase().exerciceDao().delete(exo);
+                return exo;
+            }
+
+            @Override
+            protected void onPostExecute(Exercice exercice) {
+                super.onPostExecute(exercice);
+                setResult(RESULT_OK);
+                finish();
+                return;
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        SupprimerExercices gt = new SupprimerExercices();
         gt.execute();
     }
 

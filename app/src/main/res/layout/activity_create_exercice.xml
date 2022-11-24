@@ -203,9 +203,21 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="25dp"
-                android:backgroundTint="@color/blue"
+                android:backgroundTint="@color/green"
                 android:onClick="onCreateWorkout"
                 android:text="Créer l'exercice" />
+
+
+            <Button
+                android:id="@+id/supprimerExo"
+                android:layout_width="300sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="25dp"
+                android:backgroundTint="@color/red"
+                android:onClick="onDeleteWorkout"
+                android:text="Supprimer l'exercice"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/cancel"

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.dbExercices.Exercice;
+import com.example.tabata_timer.database.dbSettings.Settings;
 import com.example.tabata_timer.utility.Compteur;
 import com.example.tabata_timer.utility.OnFinishListenner;
 import com.example.tabata_timer.utility.OnUpdateListener;
@@ -31,6 +32,8 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     private Exercice exo;
     private boolean isFirstExo = true;
     private boolean isPrepared = false;
+
+    private Settings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +89,7 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
                 exo = exercice;
                 //Affichage des info de cet exo
                 exo.modificationDate();
-                afficherInfosExercice();
+                getSettings();
             }
         }
         GetExercice gt = new GetExercice();
@@ -299,9 +302,17 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     private void onStartTimer() {
         if (exo.getIsSport()) {
             MediaPlayer song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
+            song = setVolume(song);
             song.start();
         }
         compteur.start();
+    }
+
+    private MediaPlayer setVolume(MediaPlayer song) {
+        if (!settings.getIsSoundOn()) {
+            song.setVolume(0, 0);
+        }
+        return song;
     }
 
     // Mettre en pause le compteur
@@ -316,6 +327,32 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         // Affichage des informations du compteur
         timer.setText("" + compteur.getMinutes() + ":" + String.format("%02d", compteur.getSecondes()) + ":" + String.format("%03d", compteur.getMillisecondes()));
 
+        if (exo.getIsSport()) {
+            timer.setTextColor(getResources().getColor(R.color.white));
+            if (compteur.getSecondes() <= 15) {
+                timer.setTextColor(getResources().getColor(R.color.yellow));
+            }
+            if (compteur.getSecondes() <= 10) {
+                timer.setTextColor(getResources().getColor(R.color.orange));
+            }
+            if (compteur.getSecondes() <= 5) {
+                timer.setTextColor(getResources().getColor(R.color.red));
+            }
+        }else {
+            if ((exo.getIsRepos() || exo.getIsReposLong()) && !isPrepared) {
+                timer.setTextColor(getResources().getColor(R.color.white));
+            } else if ((exo.getIsRepos() || exo.getIsReposLong()) && isPrepared) {
+                if (compteur.getSecondes() == 2) {
+                    timer.setTextColor(getResources().getColor(R.color.yellow));
+                }
+                if (compteur.getSecondes() == 1) {
+                    timer.setTextColor(getResources().getColor(R.color.orange));
+                }
+                if (compteur.getSecondes() == 0) {
+                    timer.setTextColor(getResources().getColor(R.color.red));
+                }
+            }
+        }
     }
 
     /**
@@ -427,6 +464,32 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
             setResult(RESULT_OK);
             finish();
         }
+    }
+
+    private void getSettings() {
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        class GetSettings extends AsyncTask<Void, Void, Settings> {
+
+            @Override
+            protected Settings doInBackground(Void... voids) {
+                Settings stg = mDb.getAppDatabase().settingsDao().getSettings();
+                return stg;
+            }
+
+            @Override
+            protected void onPostExecute(Settings stg) {
+                super.onPostExecute(stg);
+                settings = stg;
+                afficherInfosExercice();
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        GetSettings gt = new GetSettings();
+        gt.execute();
     }
 
 }

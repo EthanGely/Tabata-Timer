@@ -3,6 +3,7 @@ package com.example.tabata_timer;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -91,9 +94,11 @@ public class Tabata_Timer extends AppCompatActivity {
         TextView seancesExo = linearTmp.findViewById(R.id.Exo_seances);
 
         ImageButton modifier = linearTmp.findViewById(R.id.modifierExo);
-        ImageButton supprimer = linearTmp.findViewById(R.id.supprimerExo);
 
         Button btnStart = linearTmp.findViewById(R.id.startExercice);
+
+        ImageView imgStar = linearTmp.findViewById(R.id.imgStar);
+        TextView nbrStar = linearTmp.findViewById(R.id.starNbr);
 
 
         //Définition du texte pour chaque textView
@@ -103,6 +108,14 @@ public class Tabata_Timer extends AppCompatActivity {
         repsExo.setText(exercice.getRepetitionsF());
         reposLongExo.setText(exercice.getReposLongF());
         seancesExo.setText(exercice.getSeancesF());
+
+        if (exercice.getNbEtoiles() > 0) {
+            imgStar.setBackground(getDrawable(android.R.drawable.btn_star_big_on));
+            nbrStar.setText(String.valueOf(exercice.getNbEtoiles()));
+        } else {
+            imgStar.setBackground(getDrawable(android.R.drawable.btn_star_big_off));
+        }
+
 
         // Ajouter un événement au bouton de modification
 
@@ -133,36 +146,38 @@ public class Tabata_Timer extends AppCompatActivity {
             }
         });
 
-
-        // Ajouter un événement au bouton de suppression
-        supprimer.setOnClickListener(new View.OnClickListener() {
+        imgStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                new AlertDialog.Builder(Tabata_Timer.this).setTitle("Supprimer " + exercice.getNomExercice()).setMessage("Voulez-vous vraiment supprimer l'exercice " + exercice.getNomExercice())
+                String text = null;
+                if (exercice.getNbEtoiles() > 0) {
+                    text = "Vous avez obtenu " + exercice.getNbEtoiles();
+                    if (exercice.getNbEtoiles() > 1) {
+                        text += " étoiles.";
+                    } else {
+                        text += " étoile.";
+                    }
+                } else {
+                    text = "Vous n'avez pas encore obtenu d'étoiles.";
+                }
+                new AlertDialog.Builder(Tabata_Timer.this).setTitle("Étoiles de réussite").setMessage(text + "\n\n Vous obtiendrez une étoile à chaque fois que vous terminerez cet exercice.\n\nChaque exercice dispose de son propre nombre d'étoiles.")
 
                         // Specifying a listener allows you to take an action before dismissing the dialog.
                         // The dialog is automatically dismissed when a dialog button is clicked.
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                supprimerExercice(exercice);
-                            }
-                        })
+                        .setPositiveButton("Compris", null)
 
                         // A null listener allows the button to dismiss the dialog and take no further action.
-                        .setNegativeButton(android.R.string.no, null).setIcon(android.R.drawable.ic_dialog_alert).show();
+                        .setNegativeButton("En savoir plus", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getApplicationContext(), "Cette fonctionnalité est inutile. Avoir plein d'étoiles ne sert à rien.", Toast.LENGTH_LONG).show();
+                            }
+                        }).setIcon(android.R.drawable.star_big_on).show();
             }
         });
 
-        return linearTmp;
-    }
 
-    public static void setMargins(View v, int l, int r) {
-        if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            p.setMargins(l, 0, r, 0);
-            v.requestLayout();
-        }
+
+        return linearTmp;
     }
 
     public void onCreateWorkout(View view) {
@@ -227,31 +242,6 @@ public class Tabata_Timer extends AppCompatActivity {
             btnReprendre.setClickable(true);
             btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blue)));
         }
-    }
-
-    private void supprimerExercice(Exercice exo) {
-        ///////////////////////
-        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
-        class SupprimerExercices extends AsyncTask<Void, Void, Exercice> {
-
-            @Override
-            protected Exercice doInBackground(Void... voids) {
-                mDb.getAppDatabase().exerciceDao().delete(exo);
-                return exo;
-            }
-
-            @Override
-            protected void onPostExecute(Exercice exercice) {
-                super.onPostExecute(exercice);
-                getExercices();
-            }
-        }
-
-        //////////////////////////
-        // IMPORTANT bien penser à executer la demande asynchrone
-        // Création d'un objet de type GetTasks et execution de la demande asynchrone
-        SupprimerExercices gt = new SupprimerExercices();
-        gt.execute();
     }
 
 
@@ -337,6 +327,22 @@ public class Tabata_Timer extends AppCompatActivity {
 
     }
 
+    public void onChangeVolume(View view) {
+        //On inverse la valeur du son
+        settings.setSoundOn(!settings.getIsSoundOn());
+        setLogoVolume();
+        updateSettings(settings);
+    }
+
+    private void setLogoVolume() {
+        ImageButton btnSon = findViewById(R.id.btnSon);
+        if (settings.getIsSoundOn()) {
+            btnSon.setBackground(getDrawable(R.drawable.sound_on));
+        } else {
+            btnSon.setBackground(getDrawable(R.drawable.sound_off));
+        }
+    }
+
 
     private void getSettings() {
         ///////////////////////
@@ -356,6 +362,8 @@ public class Tabata_Timer extends AppCompatActivity {
                     setSettings(new Settings());
                 }
                 settings = stg;
+                setLogoVolume();
+
             }
         }
 
@@ -388,6 +396,31 @@ public class Tabata_Timer extends AppCompatActivity {
         // IMPORTANT bien penser à executer la demande asynchrone
         // Création d'un objet de type GetTasks et execution de la demande asynchrone
         GetSettings gt = new GetSettings();
+        gt.execute();
+    }
+
+    private void updateSettings(Settings settings) {
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        class UpdateSettings extends AsyncTask<Void, Void, Settings> {
+
+            @Override
+            protected Settings doInBackground(Void... voids) {
+                mDb.getAppDatabase().settingsDao().update(settings);
+                return settings;
+            }
+
+            @Override
+            protected void onPostExecute(Settings settings) {
+                super.onPostExecute(settings);
+                getSettings();
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        UpdateSettings gt = new UpdateSettings();
         gt.execute();
     }
 }

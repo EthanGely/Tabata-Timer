@@ -42,17 +42,32 @@
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="25sp"
-                android:visibility="visible" />
+                android:visibility="visible"/>
 
-            <ImageButton
-                android:id="@+id/supprimerExo"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:background="@drawable/delete"
-                android:onClick="onDeleteWorkout"
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-                />
+                <ImageView
+                    android:id="@+id/imgStar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@android:drawable/star_big_on"
+                    android:layout_centerInParent="true"
+                    android:scaleType="centerCrop"
+                    android:layout_marginTop="-1dp"
+                    />
+
+                <TextView
+                    android:id="@+id/starNbr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"/>
+
+            </RelativeLayout>
 
 
         </LinearLayout>
@@ -112,8 +127,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Commencer"
-            android:backgroundTint="@color/green"/>
+            android:backgroundTint="@color/green"
+            android:text="Commencer" />
 
     </LinearLayout>
 
