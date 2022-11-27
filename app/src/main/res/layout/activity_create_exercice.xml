@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:backgroundTint="@color/grey"
-                    android:hint="Entrez un durée"
+                    android:hint="Entrez une durée"
                     android:inputType="numberDecimal"
                     android:layout_weight="0.45"/>
 
@@ -226,7 +226,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="40dp"
-                android:backgroundTint="@color/blue"
+                android:backgroundTint="@color/green"
                 android:onClick="onCancel"
                 android:text="Annuler" />
         </LinearLayout>

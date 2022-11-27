@@ -12,6 +12,8 @@ public class Settings {
 
     private boolean isSoundOn = true;
 
+    private int idFavori = -1;
+
 
     ///////////////////////////////////////////////////////////////////////
 
@@ -30,6 +32,10 @@ public class Settings {
         return isSoundOn;
     }
 
+    public int getIdFavori() {
+        return idFavori;
+    }
+
 
     public void setId(int id) {
         this.id = id;
@@ -37,5 +43,9 @@ public class Settings {
 
     public void setSoundOn(boolean soundOn) {
         this.isSoundOn = soundOn;
+    }
+
+    public void setIdFavori(int idFavori) {
+        this.idFavori = idFavori;
     }
 }

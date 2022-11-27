@@ -145,6 +145,19 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
         //Sinon, on attends le clic user.
         if (!isFirstExo) {
             compteur.start();
+            MediaPlayer song = new MediaPlayer();
+            if (exo.getIsSport()) {
+                song = MediaPlayer.create(AllezSportif.this, R.raw.start_sound);
+            }else if (exo.getIsRepos() || exo.getIsReposLong()){
+                song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
+            }
+
+            if (exo.getIsSport() && exo.getNumeroRepetition() == exo.getRepetitions() && exo.getNumeroSeance() == exo.getSeances()) {
+                song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
+            }
+
+            song = setVolume(song);
+            song.start();
         }
     }
 
@@ -320,11 +333,6 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
 
     // Lancer le compteur
     private void onStartTimer() {
-        if (exo.getIsSport()) {
-            MediaPlayer song = MediaPlayer.create(AllezSportif.this, R.raw.sifflet);
-            song = setVolume(song);
-            song.start();
-        }
         compteur.start();
         //pBar.getProgressDrawable().setColorFilter(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.SRC_IN);
     }
@@ -332,6 +340,8 @@ public class AllezSportif extends AppCompatActivity implements OnUpdateListener,
     private MediaPlayer setVolume(MediaPlayer song) {
         if (!settings.getIsSoundOn()) {
             song.setVolume(0, 0);
+        } else {
+            song.setVolume(100, 100);
         }
         return song;
     }

@@ -16,6 +16,7 @@ Bon sport !
 
 - [ ] Sons à chaque changement d'action pendant un exercice.
 - [ ] Design plus attrayant.
+- [ ] Etoile pour favoris (plus de nombre de réussite)
 - [ ] Test du con
 
 ### DONE

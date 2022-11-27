@@ -27,6 +27,7 @@ import com.example.tabata_timer.database.dbSettings.Settings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class Tabata_Timer extends AppCompatActivity {
@@ -98,7 +99,6 @@ public class Tabata_Timer extends AppCompatActivity {
         Button btnStart = linearTmp.findViewById(R.id.startExercice);
 
         ImageView imgStar = linearTmp.findViewById(R.id.imgStar);
-        TextView nbrStar = linearTmp.findViewById(R.id.starNbr);
 
 
         //Définition du texte pour chaque textView
@@ -108,13 +108,6 @@ public class Tabata_Timer extends AppCompatActivity {
         repsExo.setText(exercice.getRepetitionsF());
         reposLongExo.setText(exercice.getReposLongF());
         seancesExo.setText(exercice.getSeancesF());
-
-        if (exercice.getNbEtoiles() > 0) {
-            imgStar.setBackground(getDrawable(android.R.drawable.btn_star_big_on));
-            nbrStar.setText(String.valueOf(exercice.getNbEtoiles()));
-        } else {
-            imgStar.setBackground(getDrawable(android.R.drawable.btn_star_big_off));
-        }
 
 
         // Ajouter un événement au bouton de modification
@@ -149,35 +142,63 @@ public class Tabata_Timer extends AppCompatActivity {
         imgStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = null;
-                if (exercice.getNbEtoiles() > 0) {
-                    text = "Vous avez obtenu " + exercice.getNbEtoiles();
-                    if (exercice.getNbEtoiles() > 1) {
-                        text += " étoiles.";
-                    } else {
-                        text += " étoile.";
-                    }
-                } else {
-                    text = "Vous n'avez pas encore obtenu d'étoiles.";
-                }
-                new AlertDialog.Builder(Tabata_Timer.this).setTitle("Étoiles de réussite").setMessage(text + "\n\n Vous obtiendrez une étoile à chaque fois que vous terminerez cet exercice.\n\nChaque exercice dispose de son propre nombre d'étoiles.")
-
-                        // Specifying a listener allows you to take an action before dismissing the dialog.
-                        // The dialog is automatically dismissed when a dialog button is clicked.
-                        .setPositiveButton("Compris", null)
-
-                        // A null listener allows the button to dismiss the dialog and take no further action.
-                        .setNegativeButton("En savoir plus", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getApplicationContext(), "Cette fonctionnalité est inutile. Avoir plein d'étoiles ne sert à rien.", Toast.LENGTH_LONG).show();
-                            }
-                        }).setIcon(android.R.drawable.star_big_on).show();
+                setFavori((int) exercice.getId(), exercice.getNomExercice());
             }
         });
 
-
-
         return linearTmp;
+    }
+
+    private void setFavori(int id, String nomExo) {
+        if (settings.getIdFavori() == id) {
+            settings.setIdFavori(-1);
+            Toast.makeText(getApplicationContext(), nomExo + " supprimé des favoris", Toast.LENGTH_LONG).show();
+
+        } else {
+            settings.setIdFavori(id);
+            Toast.makeText(getApplicationContext(), nomExo + " ajouté aux favoris", Toast.LENGTH_LONG).show();
+        }
+        updateSettings(settings);
+
+        sortListeExercice();
+        addExercices();
+        updateStars();
+    }
+
+    private void updateStars() {
+        LinearLayout allExo = findViewById(R.id.linearListeExos);
+
+        int count = allExo.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View v = allExo.getChildAt(i);
+
+            if (v instanceof LinearLayout) {
+                View v2 = ((LinearLayout) v).getChildAt(0);
+                if (v2 instanceof LinearLayout) {
+                    View v3 = ((LinearLayout) v).getChildAt(0);
+                    if (v3 instanceof LinearLayout) {
+                        View v4 = ((LinearLayout) v3).getChildAt(0);
+                        if (v4 instanceof LinearLayout) {
+                            View imageStar = ((LinearLayout) v4).getChildAt(2);
+                            View title = ((LinearLayout) v4).getChildAt(1);
+                            if (imageStar instanceof ImageView && title instanceof TextView) {
+                                int index = listeExercices.indexOf(findUsingIterator(settings.getIdFavori(), listeExercices));
+                                if (index != -1) {
+                                    String nomExo = listeExercices.get(index).getNomExercice();
+                                    if (((TextView) title).getText() == nomExo) {
+                                        imageStar.setBackground(getDrawable(android.R.drawable.star_big_on));
+                                    } else {
+                                        imageStar.setBackground(getDrawable(android.R.drawable.star_big_off));
+                                    }
+                                } else {
+                                    imageStar.setBackground(getDrawable(android.R.drawable.star_big_off));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void onCreateWorkout(View view) {
@@ -235,12 +256,14 @@ public class Tabata_Timer extends AppCompatActivity {
 
     private void activerDesactiverBoutonReprendre() {
         Button btnReprendre = findViewById(R.id.resumeWorkout);
+        LinearLayout linearLastWokout = findViewById(R.id.linearLastWorkout);
         if (listeExercices.isEmpty()) {
             btnReprendre.setClickable(false);
-            btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.grey)));
+            btnReprendre.setVisibility(View.GONE);
         } else {
             btnReprendre.setClickable(true);
-            btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blue)));
+            linearLastWokout.setBackground(getResources().getDrawable(R.drawable.blue_gradient));
+            btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.transparent)));
         }
     }
 
@@ -307,6 +330,33 @@ public class Tabata_Timer extends AppCompatActivity {
             //Sinon, on fait appel à une série de fonctions issues de Wikipedia
             listeExercices = new ArrayList<>(TopDownMergeSort(listeExercices));
         }
+
+        if (settings.getIdFavori() != -1) {
+            permutFavori(settings.getIdFavori());
+        }
+    }
+
+    private void permutFavori(int id) {
+
+        int posExo = listeExercices.indexOf(findUsingIterator(id, listeExercices));
+
+        if (posExo > 0) {
+            for (int i = posExo - 1; i >= 0; i--) {
+                Collections.rotate(listeExercices.subList(i, posExo + 1), -1);
+                posExo --;
+            }
+        }
+    }
+
+    public Exercice findUsingIterator(int id, ArrayList<Exercice> exercices) {
+        Iterator<Exercice> iterator = exercices.iterator();
+        while (iterator.hasNext()) {
+            Exercice exo = iterator.next();
+            if (exo.getId() == id) {
+                return exo;
+            }
+        }
+        return null;
     }
 
     /**
