@@ -14,10 +14,10 @@ Bon sport !
 
 ### TODO
 
-- [ ] Sons à chaque changement d'action pendant un exercice.
-- [ ] Design plus attrayant.
-- [ ] Etoile pour favoris (plus de nombre de réussite)
 - [ ] Test du con
+- [ ] Possibilité d'ajouter des types et images personalisées
+- [ ] Nettoyer le code, commenter
+- [ ] Créer les vues en mode paysage
 
 ### DONE
 
@@ -25,7 +25,7 @@ Bon sport !
 - [X] Liste des actions suivantes pendant un exercice.
 - [X] Modification, supression d'exercice.
 - [X] Gestion des doublons (uniquement sur le nom de l'exercice).
-- [X] Système d'étoiles (Nombre de réussite de l'exercice).
+- [X] Possibilité de mettre UN SEUL exercice en favori.
 - [X] Afficher un message à la fin de l'exercice.
 - [X] Possibilité de refaire un settings après l'avoir fini, sans repasser par l'accueil.
 - [X] Possibilité d'utiliser un racourci pour lancer le dernier exercice créé, modifié, exécuté.
@@ -35,12 +35,14 @@ Bon sport !
 - [X] Possibilité de reprendre ou de recommencer l'exercice.
 - [X] Implémenter la classe / table Settings (sauvegarde des parametres utilisateur)
 - [X] Possibilité d'enlever les effets sonores.
-- [X] Si l'exercice est modifié, on réinitialise la progression (sauf les étoiles).
-- [X] Barre de progression
+- [X] Si l'exercice est modifié, on réinitialise la progression.
+- [X] Barre de progression.
+- [X] Choix d'un "type d'exercice" prédéfini.
+- [X] Sons à chaque changement d'action pendant un exercice.
+- [X] Design plus attrayant.
+- [X] Le fond change de couleur en fonction de la tâche à réaliser.
+- [X] La progression de l'utilisateur est conservée à la rotation de l'écran
 
-### NEEDS CHECK
-
-- [X] Si les temps sont donnés en minutes/heures vérifier que le chrono soit bien réglé.
 
 ## Description de l'applicaton
 
@@ -54,5 +56,8 @@ Bon sport !
   nomDonné**(1)**. Le numéro est incrémenté si nomDonné**(1)** est déjà utilisé.
 - L'utilisateur peut choisir à tout moment de couper le son de l'application. Ce paramètre est stocké en BDD, donc sauvegardé entre les sessions.
 - Si un exercice est modifié, la progression (potentielle) de l'utilisateur sera predue.
-- Chaque exercice dispose de son compteur de réussite (étoiles). Cette fonctionnalité est assez inutile.
 - L'utilisateur à la possibilité de couper les sons de l'application depuis la page d'accueil, ou pendant un exercice.
+- L'utilisateur peut mettre en favori un (seul et unique) exercice, qui sera ramené en haut de la liste. S'il est retité des favoris, il sera remis à sa place. Si deux exercices sont mis en favoris, le plus ancien est retiré des favoris, et le plus récent est mis en favori.
+- L'utilisateur peut choisir un "type d'exercice" parmis les quelques thèmes prédéfinis. Pour l'instant, l'ajout de nouveaux types personnalisés n'est pas pris en charge.
+- Pour les personnes sourdes et illétrées, une couleur de fond apparaît pendant l'exercice. Elle change en fonction de la tâche à faire. Vert pour l'effort, rouge pour le repos.
+- L'utilisateur peut tourner son écran sans crainte, la progression (de l'exercice) est sauvegardée et transmise à la rotation de l'écran. YAY.

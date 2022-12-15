@@ -9,7 +9,7 @@ import com.example.tabata_timer.database.dbExercices.ExerciceDao;
 import com.example.tabata_timer.database.dbSettings.Settings;
 import com.example.tabata_timer.database.dbSettings.SettingsDao;
 
-@Database(entities = {Exercice.class, Settings.class}, version = 1, exportSchema = false)
+@Database(entities = {Exercice.class, Settings.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ExerciceDao exerciceDao();

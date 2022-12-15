@@ -1,10 +1,7 @@
 package com.example.tabata_timer;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.DialogInterface;
-import android.opengl.Visibility;
+import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -14,17 +11,19 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.dbExercices.Exercice;
+import com.example.tabata_timer.utility.TypeExercice;
 
 public class CreateExercice extends AppCompatActivity {
 
-    // DATA
-    private DatabaseClient mDb;
-
     public static final String MODIFIER_KEY = "modifier_key";
     public static final String EXERCICE_KEY = "exercice_key";
-
+    // DATA
+    private DatabaseClient mDb;
     private Exercice exerciceSave;
 
     private boolean nameChecked = false;
@@ -42,22 +41,42 @@ public class CreateExercice extends AppCompatActivity {
         // Récupération du DatabaseClient
         mDb = DatabaseClient.getInstance(getApplicationContext());
 
-        final Spinner spinnerTempsEffort = (Spinner) findViewById(R.id.chxEffort);
-        final Spinner spinnerTempsRepos = (Spinner) findViewById(R.id.chxRepos);
-        final Spinner spinnerTempsReposLong = (Spinner) findViewById(R.id.chxReposLong);
+        final Spinner spinnerTypeExo = findViewById(R.id.choixTypeExo);
+        final Spinner spinnerTempsEffort = findViewById(R.id.chxEffort);
+        final Spinner spinnerTempsRepos = findViewById(R.id.chxRepos);
+        final Spinner spinnerTempsReposLong = findViewById(R.id.chxReposLong);
 
         Button btnSuppr = findViewById(R.id.supprimerExo);
 
         String[] typesTemps = {"secondes", "minutes", "heures"};
-        ArrayAdapter<String> dataAdapterR = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typesTemps);
+        ArrayAdapter<String> dataAdapterR = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typesTemps);
         dataAdapterR.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
 
         spinnerTempsEffort.setAdapter(dataAdapterR);
         spinnerTempsRepos.setAdapter(dataAdapterR);
         spinnerTempsReposLong.setAdapter(dataAdapterR);
 
+        int currentNightMode = getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                // Night mode is not active, we're in day time
+                spinnerTypeExo.setAdapter(new ArrayAdapter<>(this, R.layout.better_spinner_day, TypeExercice.values()));
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                // Night mode is active, we're at night!
+                spinnerTypeExo.setAdapter(new ArrayAdapter<>(this, R.layout.better_spinner_night, TypeExercice.values()));
+                break;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                // We don't know what mode we're in, assume notnight
+                spinnerTypeExo.setAdapter(new ArrayAdapter<>(this, R.layout.better_spinner_day, TypeExercice.values()));
+                break;
+        }
+
         if (isModifier) {
-            id = (int) getIntent().getIntExtra(EXERCICE_KEY, -1);
+            id = getIntent().getIntExtra(EXERCICE_KEY, -1);
             if (id < 0) {
                 finish();
             }
@@ -71,12 +90,12 @@ public class CreateExercice extends AppCompatActivity {
     private void getExercice(int id) {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
         class GetExercice extends AsyncTask<Void, Void, Exercice> {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
-                Exercice exo = mDb.getAppDatabase().exerciceDao().findExerciceByID(id);
-                return exo;
+                return mDb.getAppDatabase().exerciceDao().findExerciceByID(id);
             }
 
             @Override
@@ -95,10 +114,16 @@ public class CreateExercice extends AppCompatActivity {
     }
 
 
-    public void setSpinnerValue(Spinner sp, int secondes) {
-        ArrayAdapter myAdap = (ArrayAdapter) sp.getAdapter(); //cast to an ArrayAdapter
+    public void setSpinnerValue(Spinner sp, int secondes, TypeExercice typeExo) {
+        int spinnerPosition;
+        if (secondes > -1 && typeExo == null) {
+            ArrayAdapter<String> myAdap = (ArrayAdapter<String>) sp.getAdapter();
+            spinnerPosition = myAdap.getPosition(exerciceSave.getTypeOfTime(secondes));
+        } else {
+            ArrayAdapter<TypeExercice> myAdap = (ArrayAdapter<TypeExercice>) sp.getAdapter();
+            spinnerPosition = myAdap.getPosition(typeExo);
+        }
 
-        int spinnerPosition = myAdap.getPosition(exerciceSave.getTypeOfTime(secondes));
         sp.setSelection(spinnerPosition);
     }
 
@@ -106,16 +131,18 @@ public class CreateExercice extends AppCompatActivity {
         EditText nomExo = findViewById(R.id.nomExo);
         nomExo.setText(exerciceSave.getNomExercice());
 
+        setSpinnerValue(findViewById(R.id.choixTypeExo), -1, exerciceSave.getTypeExercice());
+
 
         EditText tempsSport = findViewById(R.id.tempsSport);
         tempsSport.setText(String.valueOf(exerciceSave.getBestTime(exerciceSave.getSport())));
-        setSpinnerValue(findViewById(R.id.chxEffort), exerciceSave.getSport());
+        setSpinnerValue(findViewById(R.id.chxEffort), exerciceSave.getSport(), null);
 
 
         EditText tempsRepos = findViewById(R.id.tempsRepos);
         tempsRepos.setText(String.valueOf(exerciceSave.getBestTime(exerciceSave.getRepos())));
 
-        setSpinnerValue(findViewById(R.id.chxRepos), exerciceSave.getRepos());
+        setSpinnerValue(findViewById(R.id.chxRepos), exerciceSave.getRepos(), null);
 
 
         EditText reps = findViewById(R.id.reps);
@@ -124,14 +151,14 @@ public class CreateExercice extends AppCompatActivity {
 
         EditText reposLong = findViewById(R.id.reposLong);
         reposLong.setText(String.valueOf(exerciceSave.getBestTime(exerciceSave.getReposLong())));
-        setSpinnerValue(findViewById(R.id.chxReposLong), exerciceSave.getReposLong());
+        setSpinnerValue(findViewById(R.id.chxReposLong), exerciceSave.getReposLong(), null);
 
 
         EditText seances = findViewById(R.id.seances);
         seances.setText(String.valueOf(exerciceSave.getSeances()));
 
         Button btnValider = findViewById(R.id.createWorkout);
-        btnValider.setText("Modifier l'exercice");
+        btnValider.setText(R.string.modifier);
     }
 
     public void onCancel(View view) {
@@ -154,14 +181,14 @@ public class CreateExercice extends AppCompatActivity {
 
 
     private void getExerciceByName(String nomExo, int idExo) {
+        @SuppressLint("StaticFieldLeak")
         class GetExerciceByName extends AsyncTask<Void, Void, Exercice> {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
 
                 // adding to database
-                Exercice exo = mDb.getAppDatabase().exerciceDao().findExerciceByName(nomExo, idExo);
-                return exo;
+                return mDb.getAppDatabase().exerciceDao().findExerciceByName(nomExo, idExo);
             }
 
             @Override
@@ -184,11 +211,73 @@ public class CreateExercice extends AppCompatActivity {
 
     public void onCreateWorkout(View view) {
         //Tous les editText
-        final EditText nomExo = (EditText) findViewById(R.id.nomExo);
+        final EditText nomExo = findViewById(R.id.nomExo);
         final String nomExerciceString = String.valueOf(nomExo.getText());
-        if (nomExerciceString.isEmpty()) {
-            nomExo.setError("Nom requis");
-            nomExo.requestFocus();
+
+        final EditText tmpsSport = findViewById(R.id.tempsSport);
+        final EditText tmpsRepos = findViewById(R.id.tempsRepos);
+        final EditText nbReps = findViewById(R.id.reps);
+        final EditText tmpsReposL = findViewById(R.id.reposLong);
+        final EditText nbSeance = findViewById(R.id.seances);
+
+
+        if (nomExerciceString.isEmpty() || String.valueOf(tmpsSport.getText()).isEmpty() || String.valueOf(tmpsRepos.getText()).isEmpty() || String.valueOf(nbReps.getText()).isEmpty() || String.valueOf(tmpsReposL.getText()).isEmpty() || String.valueOf(nbSeance.getText()).isEmpty()) {
+            //On vérifie que les champs ne soient pas vide (ils sont TOUS required)
+            if (String.valueOf(nbSeance.getText()).isEmpty()) {
+                nbSeance.setError("Valeur requise");
+                nbSeance.requestFocus();
+            }
+
+            if (String.valueOf(tmpsReposL.getText()).isEmpty()) {
+                tmpsReposL.setError("Valeur requise");
+                tmpsReposL.requestFocus();
+            }
+
+            if (String.valueOf(nbReps.getText()).isEmpty()) {
+                nbReps.setError("Valeur requise");
+                nbReps.requestFocus();
+            }
+
+            if (String.valueOf(tmpsRepos.getText()).isEmpty()) {
+                tmpsRepos.setError("Valeur requise");
+                tmpsRepos.requestFocus();
+            }
+
+            if (String.valueOf(tmpsSport.getText()).isEmpty()) {
+                tmpsSport.setError("Valeur requise");
+                tmpsSport.requestFocus();
+            }
+
+            if (nomExerciceString.isEmpty()) {
+                nomExo.setError("Nom requis");
+                nomExo.requestFocus();
+            }
+        } else if (String.valueOf(tmpsSport.getText()).contains(".") || String.valueOf(tmpsRepos.getText()).contains(".") || String.valueOf(nbReps.getText()).contains(".") || String.valueOf(tmpsReposL.getText()).contains(".") || String.valueOf(nbSeance.getText()).contains(".")) {
+            //On vérifie (de manière détournée et non-professionelle) que les champs contiennent des entiers
+            if (String.valueOf(nbSeance.getText()).contains(".")) {
+                nbSeance.setError("Nombre entier requis");
+                nbSeance.requestFocus();
+            }
+
+            if (String.valueOf(tmpsReposL.getText()).contains(".")) {
+                tmpsReposL.setError("Nombre entier requis");
+                tmpsReposL.requestFocus();
+            }
+
+            if (String.valueOf(nbReps.getText()).contains(".")) {
+                nbReps.setError("Nombre entier requis");
+                nbReps.requestFocus();
+            }
+
+            if (String.valueOf(tmpsRepos.getText()).contains(".")) {
+                tmpsRepos.setError("Nombre entier requis");
+                tmpsRepos.requestFocus();
+            }
+
+            if (String.valueOf(tmpsSport.getText()).contains(".")) {
+                tmpsSport.setError("Nombre entier requis");
+                tmpsSport.requestFocus();
+            }
         } else {
             createWorkout(nomExerciceString);
         }
@@ -200,30 +289,32 @@ public class CreateExercice extends AppCompatActivity {
         if (!nameChecked) {
             getExerciceByName(nomExerciceString, id);
         } else {
-            final EditText tmpsSport = (EditText) findViewById(R.id.tempsSport);
+            final EditText tmpsSport = findViewById(R.id.tempsSport);
             int tempsSportInt = Integer.parseInt(String.valueOf(tmpsSport.getText()));
 
 
-            final EditText tmpsRepos = (EditText) findViewById(R.id.tempsRepos);
+            final EditText tmpsRepos = findViewById(R.id.tempsRepos);
             int tempsReposInt = Integer.parseInt(String.valueOf(tmpsRepos.getText()));
 
 
-            final EditText nbReps = (EditText) findViewById(R.id.reps);
+            final EditText nbReps = findViewById(R.id.reps);
             final int nbRepsInt = Integer.parseInt(String.valueOf(nbReps.getText()));
 
 
-            final EditText reposLong = (EditText) findViewById(R.id.reposLong);
+            final EditText reposLong = findViewById(R.id.reposLong);
             int reposLongInt = Integer.parseInt(String.valueOf(reposLong.getText()));
 
 
-            final EditText seances = (EditText) findViewById(R.id.seances);
+            final EditText seances = findViewById(R.id.seances);
             final int nbSeancesInt = Integer.parseInt(String.valueOf(seances.getText()));
 
             //Tous les spinners
-            final Spinner spinnerTempsEffort = (Spinner) findViewById(R.id.chxEffort);
-            final Spinner spinnerTempsRepos = (Spinner) findViewById(R.id.chxRepos);
-            final Spinner spinnerTempsReposLong = (Spinner) findViewById(R.id.chxReposLong);
+            final Spinner spinnerTypeExercice = findViewById(R.id.choixTypeExo);
+            final Spinner spinnerTempsEffort = findViewById(R.id.chxEffort);
+            final Spinner spinnerTempsRepos = findViewById(R.id.chxRepos);
+            final Spinner spinnerTempsReposLong = findViewById(R.id.chxReposLong);
 
+            final TypeExercice typeExercice = (TypeExercice) spinnerTypeExercice.getSelectedItem();
             final String typeTempsSport = (String) spinnerTempsEffort.getSelectedItem();
             final String typeTempsRepos = (String) spinnerTempsRepos.getSelectedItem();
             final String typeTempsReposLong = (String) spinnerTempsReposLong.getSelectedItem();
@@ -233,10 +324,10 @@ public class CreateExercice extends AppCompatActivity {
             reposLongInt = getTempsEnSecondes(reposLongInt, typeTempsReposLong);
 
             if (id > 0) {
-                exerciceSave.modifierExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt);
+                exerciceSave.modifierExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt, typeExercice);
                 modifierExercice(exerciceSave);
             } else {
-                saveExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt);
+                saveExercice(nomExerciceString, tempsSportInt, tempsReposInt, nbRepsInt, reposLongInt, nbSeancesInt, typeExercice);
             }
         }
     }
@@ -254,14 +345,15 @@ public class CreateExercice extends AppCompatActivity {
         return temps;
     }
 
-    private void saveExercice(String nomExo, int tempsSport, int tempsRepos, int nbReps, int tempsReposLong, int nbSeances) {
+    private void saveExercice(String nomExo, int tempsSport, int tempsRepos, int nbReps, int tempsReposLong, int nbSeances, TypeExercice tp) {
+        @SuppressLint("StaticFieldLeak")
         class SaveExercice extends AsyncTask<Void, Void, Exercice> {
 
             @Override
             protected Exercice doInBackground(Void... voids) {
 
                 // creating a task
-                Exercice exo = new Exercice(nomExo, tempsSport, tempsRepos, nbReps, tempsReposLong, nbSeances);
+                Exercice exo = new Exercice(nomExo, tempsSport, tempsRepos, nbReps, tempsReposLong, nbSeances, tp);
                 exo.resetExo();
 
                 // adding to database
@@ -295,6 +387,7 @@ public class CreateExercice extends AppCompatActivity {
     private void modifierExercice(Exercice exo) {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
         class ModifierExercices extends AsyncTask<Void, Void, Exercice> {
 
             @Override
@@ -326,11 +419,7 @@ public class CreateExercice extends AppCompatActivity {
 
                 // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        supprimerExercice(exerciceSave);
-                    }
-                })
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> supprimerExercice(exerciceSave))
 
                 // A null listener allows the button to dismiss the dialog and take no further action.
                 .setNegativeButton(android.R.string.no, null).setIcon(android.R.drawable.ic_dialog_alert).show();
@@ -339,6 +428,7 @@ public class CreateExercice extends AppCompatActivity {
     private void supprimerExercice(Exercice exo) {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
         class SupprimerExercices extends AsyncTask<Void, Void, Exercice> {
 
             @Override
@@ -352,7 +442,6 @@ public class CreateExercice extends AppCompatActivity {
                 super.onPostExecute(exercice);
                 setResult(RESULT_OK);
                 finish();
-                return;
             }
         }
 

@@ -12,9 +12,18 @@ public class DatabaseClient {
 
     // Instance unique permettant de faire le lien avec la base de données
     private static DatabaseClient instance;
-
     // Objet représentant la base de données de votre application
-    private AppDatabase appDatabase;
+    private final AppDatabase appDatabase;
+    // Objet permettant de populate (remplir) la base de données à sa création
+    RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
+
+        // Called when the database is created for the first time.
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            db.execSQL("INSERT INTO settings (isSoundOn, volume, idFavori) VALUES('TRUE', 100, -1);");
+        }
+    };
 
     // Constructeur
     private DatabaseClient(final Context context) {
@@ -26,7 +35,7 @@ public class DatabaseClient {
 
         ////////// REMPLIR LA BD à la première création à l'aide de l'objet roomDatabaseCallback
         // Ajout de la méthode addCallback permettant de populate (remplir) la base de données à sa création
-        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "data").addCallback(roomDatabaseCallback).build();
+        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "data").fallbackToDestructiveMigration().addCallback(roomDatabaseCallback).build();
     }
 
     // Méthode statique
@@ -42,15 +51,4 @@ public class DatabaseClient {
     public AppDatabase getAppDatabase() {
         return appDatabase;
     }
-
-    // Objet permettant de populate (remplir) la base de données à sa création
-    RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
-
-        // Called when the database is created for the first time.
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-
-        }
-    };
 }

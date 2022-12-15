@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class UpdateSource {
 
     // Liste des auditeurs
-    private ArrayList<OnUpdateListener> listeners = new ArrayList<OnUpdateListener>();
+    private final ArrayList<OnUpdateListener> listeners = new ArrayList<>();
 
-    private ArrayList<OnFinishListenner> listenersF = new ArrayList<OnFinishListenner>();
+    private final ArrayList<OnFinishListenner> listenersF = new ArrayList<>();
 
     // Méthode d'abonnement
     public void addOnUpdateListener(OnUpdateListener listener) {

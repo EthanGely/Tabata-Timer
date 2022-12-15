@@ -1,12 +1,19 @@
 package com.example.tabata_timer.database.dbExercices;
 
-import java.util.Date;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.example.tabata_timer.AllezSportif;
+import com.example.tabata_timer.R;
 import com.example.tabata_timer.utility.DateConverter;
+import com.example.tabata_timer.utility.TypeExercice;
+
+import java.util.Date;
 
 @Entity(tableName = "exercice")
 @TypeConverters(DateConverter.class)
@@ -37,6 +44,10 @@ public class Exercice {
 
     private int nbEtoiles = 0;
 
+    private TypeExercice typeExercice;
+
+    private int currentTime;
+
 
     ///////////////////////////////////////////////////////////////////////
 
@@ -45,9 +56,9 @@ public class Exercice {
     public Exercice() {
     }
 
-    public Exercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances) {
+    public Exercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances, TypeExercice typeExercice) {
         //On ajoute le nom de l'exercice et les valeurs associées - date de modification mise à jour
-        modifierExercice(nomExercice, tempsDeSport, tempsDeRepos, nombreDeRepetitions, reposLong, nombreDeSeances);
+        modifierExercice(nomExercice, tempsDeSport, tempsDeRepos, nombreDeRepetitions, reposLong, nombreDeSeances, typeExercice);
     }
     ///////////////////////////////////////////////////////////////////////
 
@@ -56,113 +67,128 @@ public class Exercice {
         return id;
     }
 
-    public String getNomExercice() {
-        return nomExercice;
-    }
-
-    public int getSport() {
-        return this.sport;
-    }
-
-    public int getRepos() {
-        return this.repos;
-    }
-
-    public int getReposLong() {
-        return this.reposLong;
-    }
-
-    public int getRepetitions() {
-        return this.repetitions;
-    }
-
-    public int getSeances() {
-        return this.seances;
-    }
-
-    public int getNumeroRepetition() {
-        return numeroRepetition;
-    }
-
-    public int getNumeroSeance() {
-        return numeroSeance;
-    }
-
-    public boolean getIsSport() {
-        return isSport;
-    }
-
-    public boolean getIsRepos() {
-        return isRepos;
-    }
-
-    public boolean getIsReposLong() {
-        return isReposLong;
-    }
-
-    public Date getLastModified() {
-        return lastModified;
-    }
-
-    public int getNbEtoiles() {
-        return nbEtoiles;
-    }
-
-
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getNomExercice() {
+        return nomExercice;
     }
 
     public void setNomExercice(String s) {
         nomExercice = s;
     }
 
+    public int getSport() {
+        return this.sport;
+    }
+
     public void setSport(int s) {
         sport = s;
+    }
+
+    public int getRepos() {
+        return this.repos;
     }
 
     public void setRepos(int r) {
         repos = r;
     }
 
+    public int getReposLong() {
+        return this.reposLong;
+    }
+
     public void setReposLong(int rl) {
         reposLong = rl;
+    }
+
+    public int getRepetitions() {
+        return this.repetitions;
     }
 
     public void setRepetitions(int rep) {
         repetitions = rep;
     }
 
+    public int getSeances() {
+        return this.seances;
+    }
+
     public void setSeances(int se) {
         seances = se;
+    }
+
+    public int getNumeroRepetition() {
+        return numeroRepetition;
     }
 
     public void setNumeroRepetition(int nr) {
         numeroRepetition = nr;
     }
 
+    public int getNumeroSeance() {
+        return numeroSeance;
+    }
+
     public void setNumeroSeance(int ns) {
         numeroSeance = ns;
+    }
+
+    public boolean getIsSport() {
+        return isSport;
     }
 
     public void setIsSport(boolean b) {
         isSport = b;
     }
 
+    public boolean getIsRepos() {
+        return isRepos;
+    }
+
     public void setIsRepos(boolean b) {
         isRepos = b;
+    }
+
+    public boolean getIsReposLong() {
+        return isReposLong;
     }
 
     public void setIsReposLong(boolean b) {
         isReposLong = b;
     }
 
+    public Date getLastModified() {
+        return lastModified;
+    }
+
     public void setLastModified(Date d) {
         this.lastModified = d;
     }
 
+    public int getNbEtoiles() {
+        return nbEtoiles;
+    }
+
     public void setNbEtoiles(int nb) {
         nbEtoiles = nb;
+    }
+
+    public TypeExercice getTypeExercice() {
+        return this.typeExercice;
+    }
+
+    public void setTypeExercice(TypeExercice tpE) {
+        this.typeExercice = tpE;
+    }
+
+    public int getCurrentTime() {
+        return this.currentTime;
+    }
+
+    public void setCurrentTime(int time) {
+        this.currentTime = time;
     }
 
     ////////////////////////////////////////////////////////////////////
@@ -174,7 +200,7 @@ public class Exercice {
      * <p>
      * Exemple : getTypeOfTime(3600) = "heures"; getTypeOfTime(3660) = "minutes"; //Car 3660 = 1h01.
      *
-     * @param secondes
+     * @param secondes entier représentant les secondes
      * @return String
      */
     public String getTypeOfTime(int secondes) {
@@ -194,12 +220,12 @@ public class Exercice {
      * De la même manière que getTypeOfTime, la fonction retourne cette fois-ci le nombre d'heures ou de minutes entières dans secondes.
      * Si le nombre d'heures et/ou de minutes ne sont pas des entiers, retourne le nombre de secondes.
      *
-     * @param secondes
+     * @param secondes entier représentant les secondes
      * @return int
      */
     public int getBestTime(int secondes) {
-        double hours = secondes / 3600;
-        double minutes = secondes / 60;
+        double hours = secondes / (double) 3600;
+        double minutes = secondes / (double) 60;
         if (secondes % 3600 == 0 && hours > 0) {
             return (int) hours;
         } else if (secondes % 60 == 0 && minutes > 0) {
@@ -214,7 +240,7 @@ public class Exercice {
      * Retourne une chaine xx heures yy minutes zz secondes
      * getHourMinTime(3725) => "1 heure 2 minutes 5 secondes"
      *
-     * @param secondes
+     * @param secondes entier représentant les secondes
      * @return String
      */
     public String getHourMinTime(int secondes) {
@@ -292,20 +318,21 @@ public class Exercice {
      * Permet de modifier directement toutes les variables "modifiables" (sans avoir à passer par les getteurs setteurs directement).
      * Met à jour automatiquement la date modification.
      *
-     * @param nomExercice
-     * @param tempsDeSport
-     * @param tempsDeRepos
-     * @param nombreDeRepetitions
-     * @param reposLong
-     * @param nombreDeSeances
+     * @param nomExercice         nom de l'exercice
+     * @param tempsDeSport        durée en secondes d'effort
+     * @param tempsDeRepos        durée en secondes de repos (court)
+     * @param nombreDeRepetitions nombre entier de répétitions
+     * @param reposLong           durée en secondes de repos long
+     * @param nombreDeSeances     nombre entier de séances
      */
-    public void modifierExercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances) {
+    public void modifierExercice(String nomExercice, int tempsDeSport, int tempsDeRepos, int nombreDeRepetitions, int reposLong, int nombreDeSeances, TypeExercice typeExo) {
         setNomExercice(nomExercice);
         setSport(tempsDeSport);
         setRepos(tempsDeRepos);
         setRepetitions(nombreDeRepetitions);
         setReposLong(reposLong);
         setSeances(nombreDeSeances);
+        setTypeExercice(typeExo);
 
         modificationDate();
     }
@@ -313,7 +340,7 @@ public class Exercice {
     /**
      * Retourne la durée en milisecondes.
      *
-     * @param secondes
+     * @param secondes durée entière en secondes
      * @return milisecondes
      */
     public int getMiliSec(int secondes) {
@@ -324,8 +351,8 @@ public class Exercice {
     /**
      * Si l'entier donné est supérieur à 1, ajoute un "s" à la chiane donnée.
      *
-     * @param number
-     * @param string
+     * @param number nombre entier
+     * @param string chaine à mettre ou non au pluriel
      * @return chaine au pluriel si besoin
      */
     public String checkNumber(int number, String string) {

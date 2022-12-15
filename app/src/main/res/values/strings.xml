@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">Tabata-Timer</string>
+    <string name="nom_session"><u>Nom de la session</u></string>
+    <string name="duree_effort"><u>Durée de l\'effort</u></string>
+    <string name="duree_repos"><u>Durée du repos</u></string>
+    <string name="nombre_repetitions"><u>Nombre de répétitons</u></string>
+    <string name="duree_repos_long"><u>Durée du repos long</u></string>
+    <string name="nombre_seances"><u>Nombre de séances</u></string>
+    <string name="creer_session">Création d\'une session</string>
+    <string name="entrer_nom_session">Entrez un nom de session</string>
+    <string name="entrer_duree">Entrez une durée</string>
+    <string name="entrer_nombre_repetitions">Entrez un nombre de répétitions</string>
+    <string name="entrer_nombre_seances">Entrez un nombre de séances</string>
+    <string name="creer_exercice">Créer l\'exercice</string>
+    <string name="supprimer_exercice">Supprimer l\'exercice</string>
+    <string name="annuler">Annuler</string>
+    <string name="abandonner">Abandonner l\'exercice</string>
+    <string name="empty_image">empty image</string>
+    <string name="setvolume">setVolume</string>
+    <string name="creer_une_session">Créer une session</string>
+    <string name="continuer_last_session">Continuer le dernier exercice</string>
+    <string name="settings">settings</string>
+    <string name="favori">favori</string>
+    <string name="commencer">Commencer</string>
+    <string name="logoaction">logoAction</string>
+    <string name="pause">Pause</string>
+    <string name="demarrer">Démarrer</string>
+    <string name="prep">Préparez-vous !</string>
+    <string name="modifier">Modifier l\'exercice</string>
+    <string name="type_d_exerice">Type d\'exerice</string>
 </resources>

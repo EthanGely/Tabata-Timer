@@ -24,9 +24,6 @@ public interface ExerciceDao {
     @Insert
     long insert(Exercice exercice);
 
-    @Insert
-    long[] insertAll(Exercice... exercices);
-
     @Delete
     void delete(Exercice exercice);
 

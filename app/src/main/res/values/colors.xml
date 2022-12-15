@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Couleurs obligatoires -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#0BA192</color>
-    <color name="bleuFin">#6E83FF</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="bleuDebut">#91FCFF</color>
-    <color name="grey">#9fa5ab</color>
-    <color name="orange">#FF8400</color>
-    <color name="green">#198754</color>
-    <color name="drkGrey">#575757</color>
-    <color name="transparentGrey">#BF000000</color>
-    <color name="red">#FF002A</color>
-    <color name="yellow">#FFD500</color>
-    <color name="jaunePastel">#F1E791</color>
+    <!-- /////////////////// -->
+
+    <!-- Dégradé bleu -->
+    <color name="bleuDebut">#7BD6D8</color>
+    <color name="bleuFin">#5C6ED5</color>
+
+    <!-- Dégradé bleu foncé -->
+    <color name="dBleuDebut">#4A7D7E</color>
+    <color name="dBleuFin">#38417E</color>
+
+    <!-- Dégradé violet/orange -->
     <color name="VioletDebut">#641a57</color>
     <color name="OrangeFin">#ea400f</color>
+
+    <!-- Couleurs classique -->
+    <color name="black">#FF000000</color>
+    <color name="grey">#9fa5ab</color>
+    <color name="grisFin">#6E7378</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="red">#D30023</color>
+    <color name="darkRed">#320400</color>
+    <color name="orange">#FF8400</color>
+    <color name="orangeD">#f7ceb8</color>
+    <color name="orangeF">#9E8477</color>
+    <color name="darkOrange">#000000</color>
+    <color name="yellow">#FFD500</color>
+    <color name="jaunePastel">#F1E791</color>
+    <color name="jaunePastelF">#AFA86C</color>
+    <color name="green">#198754</color>
+    <color name="darkGreen">#012926</color>
+    <color name="darkGreenTMP">#025C55</color>
+
+    <!-- Couleurs avec transparence -->
+    <color name="transparentGrey">#C3000000</color>
     <color name="transparent">#00000000</color>
 </resources>

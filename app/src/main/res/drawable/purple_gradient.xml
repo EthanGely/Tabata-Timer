@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:type="linear"
         android:angle="90"
+        android:endColor="@color/OrangeFin"
         android:startColor="@color/VioletDebut"
-        android:endColor="@color/OrangeFin"/>
-    <corners
-        android:radius="20dp">
-    </corners>
+        android:type="linear" />
+    <corners android:radius="20dp" />
     <padding
+        android:bottom="5dp"
         android:left="5dp"
-        android:top="5dp"
         android:right="5dp"
-        android:bottom="5dp">
-    </padding>
+        android:top="5dp" />
 </shape>

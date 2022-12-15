@@ -11,7 +11,6 @@ public class Compteur extends UpdateSource {
     private final static long INITIAL_TIME = 5000;
 
     private boolean isStarted = false;
-    private boolean isFinished = false;
 
     // DATA
     private long updatedTime = INITIAL_TIME;
@@ -19,7 +18,6 @@ public class Compteur extends UpdateSource {
 
 
     public Compteur() {
-        updatedTime = INITIAL_TIME;
     }
 
     public void setTimer(long temps) {
@@ -75,27 +73,12 @@ public class Compteur extends UpdateSource {
     }
 
 
-    // Remettre à le compteur à la valeur initiale
-    public void reset() {
-
-        if (timer != null) {
-            isStarted = false;
-            // Arreter le timer
-            stop();
-        }
-
-        // Réinitialiser
-        updatedTime = INITIAL_TIME;
-
-        // Mise à jour
-        update();
-
-    }
-
     // Arrete l'objet CountDownTimer et l'efface
-    private void stop() {
+    public void stop() {
         isStarted = false;
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
         timer = null;
     }
 

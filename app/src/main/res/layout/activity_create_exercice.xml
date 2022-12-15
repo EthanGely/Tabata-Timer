@@ -1,239 +1,319 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateExercice"
+    android:background="@drawable/just_sweat_it"
     android:orientation="vertical"
-    android:background="@color/grey">
+    tools:context=".CreateExercice">
 
-    <ScrollView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
 
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:text="@string/creer_session"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="40sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_margin="20dp">
-            <TextView
-                android:id="@+id/welcome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
-                android:text="Création d'un exercice"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="40sp"/>
-
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nom de l'exercice"
+                android:text="@string/type_d_exerice"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"/>
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/choixTypeExo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nom_session"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
             <EditText
                 android:id="@+id/nomExo"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="@color/grey"
-                android:hint="Entrez un nom d'exercice"
+                android:hint="@string/entrer_nom_session"
+                android:importantForAutofill="no"
+                android:inputType="text"
                 android:maxLines="1"
-                />
+                android:padding="10dp"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Durée de l'effort"
+                android:text="@string/duree_effort"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"/>
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                android:weightSum="1"
-                >
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <EditText
                     android:id="@+id/tempsSport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:backgroundTint="@color/grey"
-                    android:hint="Entrez une durée"
+                    android:layout_weight="0.45"
+                    android:hint="@string/entrer_duree"
+                    android:importantForAutofill="no"
                     android:inputType="numberDecimal"
-                    android:layout_weight="0.45"/>
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
 
                 <Spinner
                     android:id="@+id/chxEffort"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.55">
-                </Spinner>
+                    android:layout_weight="0.55" />
 
             </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Durée du repos"
+                android:text="@string/duree_repos"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"/>
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                android:weightSum="1"
-                >
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <EditText
                     android:id="@+id/tempsRepos"
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:backgroundTint="@color/grey"
-                    android:hint="Entrez la durée du repos"
-                    android:inputType="numberDecimal"
                     android:layout_weight="0.45"
-                    />
+                    android:hint="@string/entrer_duree"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
 
                 <Spinner
                     android:id="@+id/chxRepos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.55">
-                </Spinner>
+                    android:layout_weight="0.55" />
 
             </LinearLayout>
 
+        </LinearLayout>
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre de répétitons"
+                android:text="@string/nombre_repetitions"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"/>
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/reps"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="@color/grey"
-                android:hint="Entrez un nombre de répétitions"
+                android:hint="@string/entrer_nombre_repetitions"
+                android:importantForAutofill="no"
                 android:inputType="numberDecimal"
-                />
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Durée du repos long"
+                android:text="@string/duree_repos_long"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"/>
+                android:textSize="20sp" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                android:weightSum="1"
-                >
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <EditText
                     android:id="@+id/reposLong"
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:backgroundTint="@color/grey"
-                    android:hint="Entrez la durée du repos long"
-                    android:inputType="numberDecimal"
                     android:layout_weight="0.45"
-                    />
+                    android:hint="@string/entrer_duree"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
 
                 <Spinner
                     android:id="@+id/chxReposLong"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.55">
-                </Spinner>
+                    android:layout_weight="0.55" />
 
             </LinearLayout>
 
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/border_radius"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre de séances"
+                android:text="@string/nombre_seances"
                 android:textColor="@color/white"
-                android:textSize="20sp"
-                android:layout_marginTop="50dp"/>
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/seances"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="@color/grey"
-                android:hint="Entrez un nombre de séances"
+                android:hint="@string/entrer_nombre_seances"
+                android:importantForAutofill="no"
                 android:inputType="numberDecimal"
-                />
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/blue_gradient"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/createWorkout"
                 android:layout_width="300sp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="25dp"
-                android:backgroundTint="@color/green"
+                android:background="@color/transparent"
+                android:backgroundTint="@color/transparent"
                 android:onClick="onCreateWorkout"
-                android:text="Créer l'exercice" />
-
-
-            <Button
-                android:id="@+id/supprimerExo"
-                android:layout_width="300sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="25dp"
-                android:backgroundTint="@color/red"
-                android:onClick="onDeleteWorkout"
-                android:text="Supprimer l'exercice"
-                android:visibility="gone"/>
-
-            <Button
-                android:id="@+id/cancel"
-                android:layout_width="300sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="40dp"
-                android:backgroundTint="@color/green"
-                android:onClick="onCancel"
-                android:text="Annuler" />
+                android:text="@string/creer_exercice"
+                tools:ignore="UsingOnClickInXml" />
         </LinearLayout>
 
-    </ScrollView>
 
+        <Button
+            android:id="@+id/supprimerExo"
+            android:layout_width="300sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:backgroundTint="@color/red"
+            android:onClick="onDeleteWorkout"
+            android:text="@string/supprimer_exercice"
+            android:visibility="gone"
+            tools:ignore="UsingOnClickInXml" />
 
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="300sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@color/orange"
+            android:onClick="onCancel"
+            android:text="@string/annuler"
+            tools:ignore="UsingOnClickInXml" />
+    </LinearLayout>
 
-
-</LinearLayout>
+</ScrollView>

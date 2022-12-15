@@ -1,14 +1,12 @@
 package com.example.tabata_timer;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -17,27 +15,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.example.tabata_timer.database.DatabaseClient;
 import com.example.tabata_timer.database.dbExercices.Exercice;
 import com.example.tabata_timer.database.dbSettings.Settings;
+import com.example.tabata_timer.utility.MyApplication;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 public class Tabata_Timer extends AppCompatActivity {
 
-    private ArrayList<Exercice> listeExercices = new ArrayList<>();
-
-    private int id;
     private final int requestCreate = 0;
     private final int requestUpdate = 1;
     private final int requestStart = 2;
+    private ArrayList<Exercice> listeExercices = new ArrayList<>();
+    private int id;
     // DATA
     private DatabaseClient mDb;
 
@@ -48,45 +45,45 @@ public class Tabata_Timer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabata_timer);
 
+        ((MyApplication) this.getApplication()).stopCompteur();
+        ((MyApplication) this.getApplication()).stopSound();
+
         // Récupération du DatabaseClient
         mDb = DatabaseClient.getInstance(getApplicationContext());
 
+        //Récupération des settings.
+        //Cette fonction se chargera aussi de récupérer les exercices, des les trier, d'ajouter les favoris...
         getSettings();
-
-        getExercices();
     }
 
     private void addExercices() {
         LinearLayout linear = findViewById(R.id.linearListeExos);
         linear.removeAllViews();
-        LinearLayout fils = null;
+        LinearLayout fils;
 
         for (int i = 0; i < listeExercices.size(); i++) {
             if (i % 2 == 0) {
                 //Création d'un nouveau linearLayout
-                id = View.generateViewId();
+                int idCard = View.generateViewId();
                 fils = new LinearLayout(this);
                 fils.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 fils.setOrientation(LinearLayout.HORIZONTAL);
-                fils.setId(id);
+                fils.setId(idCard);
                 linear.addView(fils);
-            } else {
-                fils = findViewById(id);
             }
 
-            LinearLayout linearTmp = createNewExercice(listeExercices.get(i), linear, i);
+            LinearLayout linearTmp = createNewExercice(listeExercices.get(i));
             linear.addView(linearTmp);
         }
     }
 
-    public LinearLayout createNewExercice(Exercice exercice, LinearLayout linear, int i) {
+    @SuppressWarnings("deprecation")
+    public LinearLayout createNewExercice(Exercice exercice) {
         //Récupération du template complet
-        LinearLayout linearTmp = (LinearLayout) getLayoutInflater().inflate(R.layout.template_exercice, null);
-
-        //Récupération du linear layout du template
-        LinearLayout layoutExo = linearTmp.findViewById(R.id.Exo);
+        @SuppressLint("InflateParams") LinearLayout linearTmp = (LinearLayout) getLayoutInflater().inflate(R.layout.template_exercice, null);
 
         //Récupération des textView du template
+        TextView typeExo = linearTmp.findViewById(R.id.Exo_type);
         TextView nomExo = linearTmp.findViewById(R.id.Exo_nom);
         TextView sportExo = linearTmp.findViewById(R.id.Exo_sport);
         TextView reposExo = linearTmp.findViewById(R.id.Exo_repos);
@@ -102,6 +99,7 @@ public class Tabata_Timer extends AppCompatActivity {
 
 
         //Définition du texte pour chaque textView
+        typeExo.setText(exercice.getTypeExercice().toString());
         nomExo.setText(exercice.getNomExercice());
         sportExo.setText(exercice.getSportF());
         reposExo.setText(exercice.getReposF());
@@ -112,58 +110,44 @@ public class Tabata_Timer extends AppCompatActivity {
 
         // Ajouter un événement au bouton de modification
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int id = (int) exercice.getId();
-                Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
-                startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
+        btnStart.setOnClickListener(view -> {
+            id = (int) exercice.getId();
+            Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
+            startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
 
-                // Lancement de la demande de changement d'activité
-                startActivityForResult(startExoIntent, requestStart);
-            }
+            // Lancement de la demande de changement d'activité
+            startActivityForResult(startExoIntent, requestStart);
         });
 
 
         // Ajouter un événement au bouton de modification
-        modifier.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int id = (int) exercice.getId();
-                Intent createExoIntent = new Intent(Tabata_Timer.this, CreateExercice.class);
-                createExoIntent.putExtra(CreateExercice.MODIFIER_KEY, true);
-                createExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
+        modifier.setOnClickListener(view -> {
+            int idExo = (int) exercice.getId();
+            Intent createExoIntent = new Intent(Tabata_Timer.this, CreateExercice.class);
+            createExoIntent.putExtra(CreateExercice.MODIFIER_KEY, true);
+            createExoIntent.putExtra(CreateExercice.EXERCICE_KEY, idExo);
 
-                // Lancement de la demande de changement d'activité
-                startActivityForResult(createExoIntent, requestUpdate);
-            }
+            // Lancement de la demande de changement d'activité
+            startActivityForResult(createExoIntent, requestUpdate);
         });
 
-        imgStar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setFavori((int) exercice.getId(), exercice.getNomExercice());
-            }
-        });
+        imgStar.setOnClickListener(view -> setFavori((int) exercice.getId(), exercice.getNomExercice()));
 
         return linearTmp;
     }
 
-    private void setFavori(int id, String nomExo) {
-        if (settings.getIdFavori() == id) {
+    private void setFavori(int idFav, String nomExo) {
+        if (settings.getIdFavori() == idFav) {
             settings.setIdFavori(-1);
             Toast.makeText(getApplicationContext(), nomExo + " supprimé des favoris", Toast.LENGTH_LONG).show();
-
         } else {
-            settings.setIdFavori(id);
+            settings.setIdFavori(idFav);
             Toast.makeText(getApplicationContext(), nomExo + " ajouté aux favoris", Toast.LENGTH_LONG).show();
         }
-        updateSettings(settings);
 
-        sortListeExercice();
-        addExercices();
-        updateStars();
+        updateSettings(settings);
     }
+
 
     private void updateStars() {
         LinearLayout allExo = findViewById(R.id.linearListeExos);
@@ -186,12 +170,12 @@ public class Tabata_Timer extends AppCompatActivity {
                                 if (index != -1) {
                                     String nomExo = listeExercices.get(index).getNomExercice();
                                     if (((TextView) title).getText() == nomExo) {
-                                        imageStar.setBackground(getDrawable(android.R.drawable.star_big_on));
+                                        imageStar.setBackground(AppCompatResources.getDrawable(this, android.R.drawable.star_big_on));
                                     } else {
-                                        imageStar.setBackground(getDrawable(android.R.drawable.star_big_off));
+                                        imageStar.setBackground(AppCompatResources.getDrawable(this, android.R.drawable.star_big_off));
                                     }
                                 } else {
-                                    imageStar.setBackground(getDrawable(android.R.drawable.star_big_off));
+                                    imageStar.setBackground(AppCompatResources.getDrawable(this, android.R.drawable.star_big_off));
                                 }
                             }
                         }
@@ -201,6 +185,7 @@ public class Tabata_Timer extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void onCreateWorkout(View view) {
         Intent createExoIntent = new Intent(Tabata_Timer.this, CreateExercice.class);
         createExoIntent.putExtra(CreateExercice.MODIFIER_KEY, false);
@@ -209,50 +194,24 @@ public class Tabata_Timer extends AppCompatActivity {
     }
 
 
+    @SuppressWarnings("deprecation")
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        ((MyApplication) this.getApplication()).stopCompteur();
+        ((MyApplication) this.getApplication()).stopSound();
 
         if ((requestCode == requestCreate || requestCode == requestUpdate || requestCode == requestStart) && resultCode == RESULT_OK) {
             // Mise à jour des taches
             getExercices();
         } else if (requestCode == requestStart && resultCode == RESULT_FIRST_USER) {
             Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
-            startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
+            startExoIntent.putExtra(AllezSportif.EXERCICE_KEY, id);
 
             // Lancement de la demande de changement d'activité
             startActivityForResult(startExoIntent, requestStart);
         }
     }
 
-
-    private void getExercices() {
-        ///////////////////////
-        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
-        class GetExercices extends AsyncTask<Void, Void, List<Exercice>> {
-
-            @Override
-            protected List<Exercice> doInBackground(Void... voids) {
-                List<Exercice> exoList = mDb.getAppDatabase().exerciceDao().getAll();
-                return exoList;
-            }
-
-            @Override
-            protected void onPostExecute(List<Exercice> exercices) {
-                super.onPostExecute(exercices);
-                listeExercices.clear();
-                listeExercices.addAll(exercices);
-                activerDesactiverBoutonReprendre();
-                sortListeExercice();
-                addExercices();
-            }
-        }
-
-        //////////////////////////
-        // IMPORTANT bien penser à executer la demande asynchrone
-        // Création d'un objet de type GetTasks et execution de la demande asynchrone
-        GetExercices gt = new GetExercices();
-        gt.execute();
-    }
 
     private void activerDesactiverBoutonReprendre() {
         Button btnReprendre = findViewById(R.id.resumeWorkout);
@@ -262,7 +221,7 @@ public class Tabata_Timer extends AppCompatActivity {
             btnReprendre.setVisibility(View.GONE);
         } else {
             btnReprendre.setClickable(true);
-            linearLastWokout.setBackground(getResources().getDrawable(R.drawable.blue_gradient));
+            linearLastWokout.setBackground(AppCompatResources.getDrawable(this, R.drawable.blue_gradient));
             btnReprendre.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.transparent)));
         }
     }
@@ -343,15 +302,13 @@ public class Tabata_Timer extends AppCompatActivity {
         if (posExo > 0) {
             for (int i = posExo - 1; i >= 0; i--) {
                 Collections.rotate(listeExercices.subList(i, posExo + 1), -1);
-                posExo --;
+                posExo--;
             }
         }
     }
 
     public Exercice findUsingIterator(int id, ArrayList<Exercice> exercices) {
-        Iterator<Exercice> iterator = exercices.iterator();
-        while (iterator.hasNext()) {
-            Exercice exo = iterator.next();
+        for (Exercice exo : exercices) {
             if (exo.getId() == id) {
                 return exo;
             }
@@ -362,14 +319,16 @@ public class Tabata_Timer extends AppCompatActivity {
     /**
      * Continue / recommence le dernier exercice lancé
      *
-     * @param view
+     * @param view vue
      */
+    @SuppressWarnings("deprecation")
     public void onResumeLastWorkout(View view) {
         if (!listeExercices.isEmpty()) {
             //Récupération de l'ID du premier exercice de la liste triée
-            int id = (int) listeExercices.get(0).getId();
+            //Il est aussi possible d'utiliser l'attribut de classe "id" qui est mis à jour au lancement d'un exercice.
+            int idExo = (int) listeExercices.get(0).getId();
             Intent startExoIntent = new Intent(Tabata_Timer.this, AllezSportif.class);
-            startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, id);
+            startExoIntent.putExtra(CreateExercice.EXERCICE_KEY, idExo);
 
             // Lancement de la demande de changement d'activité
             startActivityForResult(startExoIntent, requestStart);
@@ -387,22 +346,52 @@ public class Tabata_Timer extends AppCompatActivity {
     private void setLogoVolume() {
         ImageButton btnSon = findViewById(R.id.btnSon);
         if (settings.getIsSoundOn()) {
-            btnSon.setBackground(getDrawable(R.drawable.sound_on));
+            btnSon.setBackground(AppCompatResources.getDrawable(this, R.drawable.sound_on));
         } else {
-            btnSon.setBackground(getDrawable(R.drawable.sound_off));
+            btnSon.setBackground(AppCompatResources.getDrawable(this, R.drawable.sound_off));
         }
     }
 
+    private void getExercices() {
+        mDb = DatabaseClient.getInstance(getApplicationContext());
+        ///////////////////////
+        // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
+        class GetExercices extends AsyncTask<Void, Void, List<Exercice>> {
+
+            @Override
+            protected List<Exercice> doInBackground(Void... voids) {
+                return mDb.getAppDatabase().exerciceDao().getAll();
+            }
+
+            @Override
+            protected void onPostExecute(List<Exercice> exercices) {
+                super.onPostExecute(exercices);
+                listeExercices.clear();
+                listeExercices.addAll(exercices);
+                sortListeExercice();
+                activerDesactiverBoutonReprendre();
+                addExercices();
+                updateStars();
+            }
+        }
+
+        //////////////////////////
+        // IMPORTANT bien penser à executer la demande asynchrone
+        // Création d'un objet de type GetTasks et execution de la demande asynchrone
+        GetExercices gt = new GetExercices();
+        gt.execute();
+    }
 
     private void getSettings() {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
         class GetSettings extends AsyncTask<Void, Void, Settings> {
 
             @Override
             protected Settings doInBackground(Void... voids) {
-                Settings stg = mDb.getAppDatabase().settingsDao().getSettings();
-                return stg;
+                return mDb.getAppDatabase().settingsDao().getSettings();
             }
 
             @Override
@@ -410,10 +399,12 @@ public class Tabata_Timer extends AppCompatActivity {
                 super.onPostExecute(stg);
                 if (stg == null) {
                     setSettings(new Settings());
+                    return;
                 }
                 settings = stg;
-                setLogoVolume();
 
+                setLogoVolume();
+                getExercices();
             }
         }
 
@@ -427,6 +418,7 @@ public class Tabata_Timer extends AppCompatActivity {
     private void setSettings(Settings settings) {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
         class GetSettings extends AsyncTask<Void, Void, Settings> {
 
             @Override
@@ -452,6 +444,7 @@ public class Tabata_Timer extends AppCompatActivity {
     private void updateSettings(Settings settings) {
         ///////////////////////
         // Classe asynchrone permettant de récupérer des taches et de mettre à jour le listView de l'activité
+        @SuppressLint("StaticFieldLeak")
         class UpdateSettings extends AsyncTask<Void, Void, Settings> {
 
             @Override

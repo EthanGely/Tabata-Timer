@@ -3,103 +3,105 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Tabata_Timer"
-    android:background="@drawable/bg_beach">
-
-
+    android:background="@drawable/bg_beach"
+    android:orientation="vertical"
+    tools:context=".Tabata_Timer">
 
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="1"
-        >
+        android:weightSum="1">
+
         <ImageButton
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_gravity="center"
-            android:visibility="invisible"/>
+            android:layout_marginStart="5dp"
+            android:contentDescription="@string/empty_image"
+            android:visibility="invisible" />
+
         <TextView
             android:id="@+id/welcome"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20sp"
-            android:text="Tabata Timer"
             android:layout_weight="1"
+            android:fontFamily="@font/halo"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/grey"
-            android:textSize="40sp"/>
+            android:textSize="26sp" />
 
         <ImageButton
             android:id="@+id/btnSon"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:background="@drawable/sound_on"
             android:layout_gravity="center"
-            android:onClick="onChangeVolume"/>
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/sound_on"
+            android:contentDescription="@string/setvolume"
+            android:onClick="onChangeVolume"
+            tools:ignore="UsingOnClickInXml" />
     </LinearLayout>
-
-
-
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/blue_gradient"
         android:layout_marginTop="25dp"
-        >
+        android:background="@drawable/blue_gradient">
 
         <Button
             android:id="@+id/createWorkout"
             android:layout_width="300sp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@color/transparent"
+            android:backgroundTint="@color/transparent"
             android:onClick="onCreateWorkout"
-            android:text="Créer une session"
+            android:text="@string/creer_une_session"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resumeWorkout"
-            android:backgroundTint="@color/transparent"
-            android:background="@color/transparent"
-            />
+            tools:ignore="UsingOnClickInXml" />
     </LinearLayout>
 
 
+    <LinearLayout
+        android:id="@+id/overScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="25dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/createWorkout">
 
-        <LinearLayout
-            android:layout_marginTop="25dp"
-            android:id="@+id/overScroll"
+        <ScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@+id/createWorkout"
-            android:orientation="vertical">
-            <ScrollView
-                android:id="@+id/scroll"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:id="@+id/linearListeExos"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintTop_toBottomOf="@+id/createWorkout">
-
-                <LinearLayout
-                    android:id="@+id/linearListeExos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:isScrollContainer="true">
+                android:layout_height="wrap_content"
+                android:isScrollContainer="true"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
 
-                </LinearLayout>
-            </ScrollView>
-        </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
 
     <LinearLayout
@@ -107,23 +109,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/transparent"
         android:layout_marginTop="25dp"
-        >
+        android:background="@color/transparent">
 
         <Button
             android:id="@+id/resumeWorkout"
             android:layout_width="300sp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:onClick="onResumeLastWorkout"
-            android:text="Continuer le dernier exercice"
             android:background="@color/transparent"
             android:backgroundTint="@color/transparent"
             android:clickable="false"
-            />
+            android:onClick="onResumeLastWorkout"
+            android:text="@string/continuer_last_session"
+            tools:ignore="UsingOnClickInXml" />
     </LinearLayout>
-
 
 
 </LinearLayout>
