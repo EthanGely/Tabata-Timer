@@ -53,25 +53,20 @@ public class CreateExercice extends AppCompatActivity {
         dataAdapterR.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 
-
         spinnerTempsEffort.setAdapter(dataAdapterR);
         spinnerTempsRepos.setAdapter(dataAdapterR);
         spinnerTempsReposLong.setAdapter(dataAdapterR);
 
-        int currentNightMode = getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         switch (currentNightMode) {
             case Configuration.UI_MODE_NIGHT_NO:
-                // Night mode is not active, we're in day time
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                // We're in day time, or we don't know when we are !
                 spinnerTypeExo.setAdapter(new ArrayAdapter<>(this, R.layout.better_spinner_day, TypeExercice.values()));
                 break;
             case Configuration.UI_MODE_NIGHT_YES:
                 // Night mode is active, we're at night!
                 spinnerTypeExo.setAdapter(new ArrayAdapter<>(this, R.layout.better_spinner_night, TypeExercice.values()));
-                break;
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                // We don't know what mode we're in, assume notnight
-                spinnerTypeExo.setAdapter(new ArrayAdapter<>(this, R.layout.better_spinner_day, TypeExercice.values()));
                 break;
         }
 
@@ -276,6 +271,33 @@ public class CreateExercice extends AppCompatActivity {
 
             if (String.valueOf(tmpsSport.getText()).contains(".")) {
                 tmpsSport.setError("Nombre entier requis");
+                tmpsSport.requestFocus();
+            }
+        } else if (Integer.parseInt(String.valueOf(tmpsSport.getText())) == 0 || Integer.parseInt(String.valueOf(tmpsRepos.getText())) == 0 || Integer.parseInt(String.valueOf(nbReps.getText())) == 0 || Integer.parseInt(String.valueOf(tmpsReposL.getText())) == 0 || Integer.parseInt(String.valueOf(nbSeance.getText())) == 0) {
+            //On vérifie que les nombres soient supérieurs à 0
+
+            if (Integer.parseInt(String.valueOf(nbSeance.getText())) == 0) {
+                nbSeance.setError("Nombre positif non nul requis");
+                nbSeance.requestFocus();
+            }
+
+            if (Integer.parseInt(String.valueOf(tmpsReposL.getText())) == 0) {
+                tmpsReposL.setError("Nombre positif non nul requis");
+                tmpsReposL.requestFocus();
+            }
+
+            if (Integer.parseInt(String.valueOf(nbReps.getText())) == 0) {
+                nbReps.setError("Nombre positif non nul requis");
+                nbReps.requestFocus();
+            }
+
+            if (Integer.parseInt(String.valueOf(tmpsRepos.getText())) == 0) {
+                tmpsRepos.setError("Nombre positif non nul requis");
+                tmpsRepos.requestFocus();
+            }
+
+            if (Integer.parseInt(String.valueOf(tmpsSport.getText())) == 0) {
+                tmpsSport.setError("Nombre positif non nul requis");
                 tmpsSport.requestFocus();
             }
         } else {

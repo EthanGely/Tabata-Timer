@@ -14,9 +14,6 @@ Bon sport !
 
 ### TODO
 
-- [ ] Test du con
-- [ ] Possibilité d'ajouter des types et images personalisées
-- [ ] Nettoyer le code, commenter
 - [ ] Créer les vues en mode paysage
 
 ### DONE
@@ -42,6 +39,8 @@ Bon sport !
 - [X] Design plus attrayant.
 - [X] Le fond change de couleur en fonction de la tâche à réaliser.
 - [X] La progression de l'utilisateur est conservée à la rotation de l'écran
+- [X] Test du con
+- [X] Nettoyer le code, commenter
 
 
 ## Description de l'applicaton
