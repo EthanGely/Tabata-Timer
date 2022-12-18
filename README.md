@@ -11,6 +11,7 @@ Si, vous ne shouaitez pas faire preuve d'altruisme, ne vous inquiétez pas, cett
 Bon sport !
 
 ## Last release notes
+Vous trouverez le diagramme à la racine du projet, sous le nom applicationAndroid.drawio.pdf.
 
 ### TODO
 
